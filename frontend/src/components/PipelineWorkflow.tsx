@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { DocumentSummary } from "../api/client";
 import { t } from "../i18n";
 
@@ -20,6 +20,27 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [customQuery, setCustomQuery] = useState("");
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const startTimeRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (running) {
+      timerRef.current = setInterval(() => {
+        setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [running]);
 
   const toggleStep = (stepId: string) => {
     setSelectedSteps((prev) =>
@@ -32,6 +53,8 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
   const handleRun = async () => {
     if (selectedSteps.length === 0) return;
 
+    startTimeRef.current = Date.now();
+    setElapsedSeconds(0);
     setRunning(true);
     setError(null);
     setResult(null);
@@ -108,6 +131,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
               <button
                 key={step.id}
                 onClick={() => toggleStep(step.id)}
+                disabled={running}
                 style={{
                   padding: "10px 18px",
                   borderRadius: "var(--radius)",
@@ -120,7 +144,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
                   color: isSelected
                     ? "var(--color-primary)"
                     : "var(--color-text-secondary)",
-                  cursor: "pointer",
+                  cursor: running ? "not-allowed" : "pointer",
                   fontSize: 13,
                   fontWeight: isSelected ? 700 : 500,
                   transition: "all 0.15s ease",
@@ -156,6 +180,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
         <textarea
           value={customQuery}
           onChange={(e) => setCustomQuery(e.target.value)}
+          disabled={running}
           placeholder="Analyze this legal document and extract its main components."
           rows={2}
           style={{
@@ -186,6 +211,36 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
           <span>{t("pipeline.run")} ({selectedSteps.length} steps)</span>
         )}
       </button>
+
+      {running && (
+        <div style={{ marginBottom: 20 }}>
+          <div className="progress-bar" style={{ marginBottom: 8 }}>
+            <div className="progress-bar-indeterminate" />
+          </div>
+          <div style={{ fontSize: 13, color: "var(--color-text-secondary)", textAlign: "center", marginBottom: 12 }}>
+            ⏳ {t("pipeline.running")}... {elapsedSeconds}s
+          </div>
+
+          {selectedSteps.includes("analyze") && (
+            <div style={{ marginTop: 12 }}>
+              <div className="section-label">{t("analysis.summary")}</div>
+              <div className="skeleton" style={{ height: 60, marginTop: 6 }} />
+            </div>
+          )}
+          {selectedSteps.includes("review") && (
+            <div style={{ marginTop: 12 }}>
+              <div className="section-label">{t("pipeline.steps.review")}</div>
+              <div className="skeleton" style={{ height: 80, marginTop: 6 }} />
+            </div>
+          )}
+          {selectedSteps.includes("draft") && (
+            <div style={{ marginTop: 12 }}>
+              <div className="section-label">{t("pipeline.steps.draft")}</div>
+              <div className="skeleton" style={{ height: 80, marginTop: 6 }} />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Error */}
       {error && (

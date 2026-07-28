@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { t } from "../i18n";
 
 const API_BASE = "http://localhost:8000";
@@ -19,6 +19,27 @@ function EmailClassifier() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ClassificationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const startTimeRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (loading) {
+      timerRef.current = setInterval(() => {
+        setElapsedSeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [loading]);
 
   const handleClassify = async () => {
     if (!body.trim()) {
@@ -26,6 +47,8 @@ function EmailClassifier() {
       return;
     }
 
+    startTimeRef.current = Date.now();
+    setElapsedSeconds(0);
     setLoading(true);
     setError(null);
     setResult(null);
@@ -149,17 +172,32 @@ function EmailClassifier() {
         {/* ── Result ─────────────────────────────── */}
         <div style={{ flex: 1, minWidth: 0 }}>
           {loading && (
-            <div
-              role="status"
-              aria-live="polite"
-              style={{
-                padding: 24,
-                textAlign: "center",
-                color: "var(--color-text-secondary)",
-              }}
-            >
-              <div style={{ fontSize: 32, marginBottom: 12 }} aria-hidden="true">⏳</div>
-              Running classification...
+            <div role="status" aria-live="polite">
+              <div className="progress-bar" style={{ marginBottom: 8 }}>
+                <div className="progress-bar-indeterminate" />
+              </div>
+              <div style={{ fontSize: 13, color: "var(--color-text-secondary)", textAlign: "center", marginBottom: 16 }}>
+                ⏳ {t("classifier.classifying")}... {elapsedSeconds}s
+              </div>
+
+              <div
+                style={{
+                  padding: 24,
+                  borderRadius: "var(--radius-lg)",
+                  border: "1px solid var(--color-border)",
+                  backgroundColor: "var(--color-surface)",
+                }}
+              >
+                <div style={{ textAlign: "center", marginBottom: 16 }}>
+                  <div
+                    className="skeleton"
+                    style={{ width: 48, height: 48, borderRadius: "50%", margin: "0 auto 8px" }}
+                  />
+                  <div className="skeleton" style={{ width: "60%", height: 24, margin: "0 auto" }} />
+                </div>
+                <div className="skeleton" style={{ height: 8, marginBottom: 4 }} />
+                <div className="skeleton" style={{ width: "40%", height: 8 }} />
+              </div>
             </div>
           )}
 

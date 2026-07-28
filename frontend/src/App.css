@@ -752,6 +752,19 @@ button:active:not(:disabled) {
   transition: width 0.3s ease;
 }
 
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+.progress-bar-indeterminate {
+  height: 100%;
+  border-radius: 2px;
+  background-color: var(--color-primary);
+  width: 33%;
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
 /* ── Empty state ─────────────────────────── */
 .empty-state {
   display: flex;
