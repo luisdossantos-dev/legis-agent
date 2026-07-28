@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { t } from "../i18n";
 
 const API_BASE = "http://localhost:8000";
 const API_PREFIX = "/api/v1";
@@ -10,17 +11,6 @@ interface ClassificationResult {
   method: string;
   details: string | null;
 }
-
-import { t } from "../i18n";
-
-const CATEGORY_LABELS: Record<string, string> = {
-  cliente_nuevo: t("category.cliente_nuevo"),
-  seguimiento_escritura: t("category.seguimiento_escritura"),
-  consulta_hipoteca: t("category.consulta_hipoteca"),
-  notificacion_banco: t("category.notificacion_banco"),
-  spam: t("category.spam"),
-  interno: t("category.interno"),
-};
 
 function EmailClassifier() {
   const [fromAddress, setFromAddress] = useState("");
@@ -209,7 +199,7 @@ function EmailClassifier() {
                     marginBottom: 4,
                   }}
                 >
-                  {CATEGORY_LABELS[result.category] || result.category}
+                  {t("category." + result.category) || result.category}
                 </div>
                 <div
                   style={{
