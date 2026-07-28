@@ -21,6 +21,7 @@ CLAUSE_TYPES: List[str] = [
     "renonciation",
     "garantie",
     "penalite",
+    "confidentialite",
     "autre",
 ]
 
@@ -31,6 +32,7 @@ CLAUSE_TYPE_LABELS: Dict[str, str] = {
     "renonciation": "Waiver of Rights",
     "garantie": "Warranties & Guarantees",
     "penalite": "Penalty Clauses",
+    "confidentialite": "Confidentiality & Non-Disclosure",
     "autre": "Other / General",
 }
 
@@ -117,6 +119,14 @@ _REQUIRED: Dict[str, List[str]] = {
         "Bénéficiaire de la pénalité",
         "Révision possible (indexation, etc.)",
     ],
+    "confidentialite": [
+        "Définition précise des informations confidentielles",
+        "Parties concernées par l'obligation de confidentialité",
+        "Durée de l'obligation de confidentialité",
+        "Exclusions de confidentialité (info publiques, etc.)",
+        "Conséquences en cas de violation",
+        "Destinataires autorisés des informations",
+    ],
     "autre": [
         "Identification des parties concernées",
         "Objet clair et précis",
@@ -180,6 +190,16 @@ _ISSUES: Dict[str, List[Dict[str, str]]] = {
         {"pattern": "Déclencheur imprécis", "severity": "medium",
          "description": "Préciser clairement ce qui déclenche la pénalité"},
     ],
+    "confidentialite": [
+        {"pattern": "Durée non spécifiée", "severity": "high",
+         "description": "La durée de l'obligation de confidentialité doit être précisée"},
+        {"pattern": "Définition trop large", "severity": "high",
+         "description": "La définition des informations confidentielles est trop large — risque d'inopposabilité"},
+        {"pattern": "Absence d'exclusions", "severity": "medium",
+         "description": "Prévoir les exclusions standard (info publiques, obligations légales, etc.)"},
+        {"pattern": "Pas de sanction en cas de violation", "severity": "medium",
+         "description": "Indiquer les conséquences d'une violation de confidentialité"},
+    ],
     "autre": [
         {"pattern": "Parties non identifiées", "severity": "high",
          "description": "Toutes les parties doivent être clairement identifiées"},
@@ -229,6 +249,14 @@ _RISK_PATTERNS: Dict[str, List[Dict[str, Any]]] = {
         {"name": "penalite_sans_plafond", "risk_level": "yellow",
          "description": "Pénalités cumulatives sans plafond"},
     ],
+    "confidentialite": [
+        {"name": "duree_indeterminee", "risk_level": "yellow",
+         "description": "Durée de confidentialité indéterminée — risque de requalification"},
+        {"name": "definition_excessive", "risk_level": "red",
+         "description": "Définition trop large des informations confidentielles — risque d'inopposabilité"},
+        {"name": "absence_exclusions", "risk_level": "yellow",
+         "description": "Absence d'exclusions standard (domaine public, info déjà connue)"},
+    ],
     "autre": [
         {"name": "langage_ambigu", "risk_level": "yellow",
          "description": "Termes ambigus pouvant donner lieu à interprétation contradictoire"},
@@ -265,6 +293,10 @@ _LEGAL_REFERENCES: Dict[str, Dict[str, str]] = {
     "penalite": {
         "art_1231_5": "Art. 1231-5 C. civ. — Réduction des pénalités excessives",
         "art_1231_6": "Art. 1231-6 C. civ. — Intérêts moratoires",
+    },
+    "confidentialite": {
+        "art_1112": "Art. 1112 C. civ. — Violation de la confidentialité engage la responsabilité",
+        "art_1240": "Art. 1240 C. civ. — Responsabilité extracontractuelle",
     },
     "autre": {},
 }

@@ -373,7 +373,7 @@ async def run_agent_pipeline(
         "query": query,
         "retrieved_chunks": [],
         "analysis": {},
-        "review": None,
+        "review": "",
         "draft": "",
         "messages": messages or [],
         "error": "",
@@ -392,11 +392,11 @@ async def run_agent_pipeline(
         )
 
         return {
-            "analysis": result.get("analysis", {}),
-            "review": result.get("review", ""),
-            "draft": result.get("draft", ""),
-            "document_type": result.get("document_type", ""),
-            "steps_executed": result.get("steps", []),
+            "analysis": result.get("analysis") or {},
+            "review": result.get("review") or "",
+            "draft": result.get("draft") or "",
+            "document_type": result.get("document_type") or "",
+            "steps_executed": result.get("steps") or [],
             "processing_time_ms": elapsed,
         }
 

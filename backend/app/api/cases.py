@@ -111,10 +111,17 @@ async def process_and_assemble_endpoint(req: ProcessRequest):
     return result
 
 
-@router.get("", response_model=CaseListResponse)
-async def list_cases(status: Optional[str] = None):
-    """List all case files, optionally filtered by status."""
-    cases = case_store.list_cases(status=status)
+@router.get("", response_model=CaseListResponse, include_in_schema=False)
+@router.get("/", response_model=CaseListResponse)
+async def list_cases(
+    status: Optional[str] = None,
+    limit: int = 100,
+    offset: int = 0,
+):
+    """List case files with pagination, optionally filtered by status."""
+    all_cases = case_store.list_cases(status=status)
+    total = len(all_cases)
+    paginated = all_cases[offset : offset + limit]
 
     summaries = [
         CaseFileSummary(
@@ -127,10 +134,10 @@ async def list_cases(status: Optional[str] = None):
             parties=c.get("parties", []),
             property_ref=c.get("property_ref", ""),
         )
-        for c in cases
+        for c in paginated
     ]
 
-    return CaseListResponse(cases=summaries, total=len(summaries))
+    return CaseListResponse(cases=summaries, total=total)
 
 
 @router.get("/stats")

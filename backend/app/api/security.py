@@ -2,11 +2,17 @@
 Security API endpoints.
 GET /api/security/status — Show security layer status.
 POST /api/security/scan — Scan text for injection patterns.
+GET /api/security/csrf-token — Get a CSRF token.
+GET /api/security/audit-log — Get recent audit log entries.
 """
 
 import logging
+import uuid
+from datetime import datetime
+from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Header, Query
+
 from pydantic import BaseModel
 
 from app.core.security import (
@@ -16,6 +22,7 @@ from app.core.security import (
     detect_injection_attempt,
     sanitize_text,
 )
+from app.core.gdpr import _load_audit_entries
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +31,11 @@ router = APIRouter()
 
 class ScanRequest(BaseModel):
     text: str
+
+
+# ── In-memory CSRF token store ──────────────────────────────────
+
+_csrf_tokens: dict = {}
 
 
 @router.get("/status")
@@ -63,4 +75,44 @@ async def scan_for_injection(req: ScanRequest):
         "injection_detected": result is not None,
         "matched_pattern": result,
         "snippet": sanitized[:200] if len(sanitized) > 200 else sanitized,
+    }
+
+
+@router.get("/csrf-token")
+async def get_csrf_token():
+    """
+    Generate and return a CSRF token.
+
+    The token is stored in memory and can be validated
+    for subsequent state-changing requests.
+    """
+    token = str(uuid.uuid4())
+    _csrf_tokens[token] = datetime.utcnow().isoformat()
+
+    # Prune old tokens (keep at most 1000)
+    if len(_csrf_tokens) > 1000:
+        keys = sorted(_csrf_tokens.keys(), key=lambda k: _csrf_tokens[k])
+        for k in keys[:-500]:
+            del _csrf_tokens[k]
+
+    return {
+        "csrf_token": token,
+        "expires_in": "session",
+        "usage": "Include as X-CSRF-Token header in state-changing requests",
+    }
+
+
+@router.get("/audit-log")
+async def get_audit_log(
+    limit: int = Query(default=50, ge=1, le=500, description="Number of entries to return"),
+):
+    """
+    Get recent audit log entries.
+
+    Returns the most recent audit log entries from the GDPR audit trail.
+    """
+    entries = _load_audit_entries(limit=limit)
+    return {
+        "total_returned": len(entries),
+        "entries": entries,
     }

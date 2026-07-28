@@ -117,10 +117,12 @@ async def get_me(user: AuthContext = Depends(get_current_user)):
 
 @router.get("/users", response_model=List[UserResponse])
 async def list_all_users(
+    limit: int = 100,
+    offset: int = 0,
     user: AuthContext = Depends(require_permission(Permission.ADMIN)),
 ):
-    """List all users (admin only)."""
-    return list_users()
+    """List all users with pagination (admin only)."""
+    return list_users()[offset : offset + limit]
 
 
 @router.get("/users/{user_id}", response_model=UserResponse)

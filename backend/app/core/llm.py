@@ -316,7 +316,7 @@ async def llm_complete(
 
         return content
 
-    except (ConnectionError, TimeoutError, ValueError, OSError, ImportError) as e:
+    except Exception as e:
         error_str = str(e)
         is_auth = "401" in error_str or "AuthenticationError" in error_str or "authentication" in error_str.lower()
 
@@ -508,7 +508,7 @@ async def llm_complete_stream(
 
         yield f"data: {json.dumps({'token': '', 'done': True})}\n\n"
 
-    except (ConnectionError, TimeoutError, ValueError, OSError, ImportError) as e:
+    except Exception as e:
         error_str = str(e)
         is_auth = "401" in error_str or "AuthenticationError" in error_str or "authentication" in error_str.lower()
 

@@ -88,7 +88,8 @@ async def optimize_endpoint(req: OptimizeRequest):
     )
 
     if result.get("status") == "error":
-        raise HTTPException(status_code=500, detail=result.get("message", "Optimization failed"))
+        logger.error("Prompt optimization failed: %s", result.get("message", "unknown"))
+        raise HTTPException(status_code=500, detail="Prompt optimization failed. Please try again.")
 
     # Audit log
     log_interaction(

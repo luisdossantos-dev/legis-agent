@@ -63,7 +63,8 @@ async def render_document(req: RenderRequest):
     success, result, error = render_template(req.act_type, req.data, req.template_name)
 
     if not success:
-        raise HTTPException(status_code=422, detail=error)
+        logger.warning("Template rendering error: %s", error[:200] if error else "unknown")
+        raise HTTPException(status_code=422, detail="Template rendering failed. Check that all required fields are provided and valid.")
 
     # If required fields are missing, return partial result with warnings
     if result.get("missing_fields"):

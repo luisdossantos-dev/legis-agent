@@ -164,7 +164,7 @@ async def run_pipeline(request: Request, req: PipelineRequest):
 
     if "error" in result and result["error"]:
         logger.error("Pipeline error: %s", result["error"])
-        raise HTTPException(status_code=500, detail=f"Pipeline failed: {result['error']}")
+        raise HTTPException(status_code=500, detail="Pipeline failed. Please try again.")
 
     # Build analysis result
     analysis_data = result.get("analysis", {})
@@ -182,10 +182,10 @@ async def run_pipeline(request: Request, req: PipelineRequest):
 
     return PipelineResponse(
         analysis=parsed,
-        review=result.get("review", ""),
-        draft=result.get("draft", ""),
-        document_type=result.get("document_type", ""),
-        steps_executed=result.get("steps_executed", []),
+        review=result.get("review") or "",
+        draft=result.get("draft") or "",
+        document_type=result.get("document_type") or "",
+        steps_executed=result.get("steps_executed") or [],
         processing_time_ms=(time.time() - start_time) * 1000,
     )
 

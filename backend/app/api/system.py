@@ -48,6 +48,12 @@ async def logs_summary():
 _config_cache = cached_result(ttl_seconds=2)
 
 
+@router.get("/providers")
+async def list_providers():
+    """Return the list of available LLM providers with their metadata."""
+    return {"providers": get_provider_list()}
+
+
 @router.get("/config")
 async def get_config():
     """Return current runtime configuration, provider list, and status (cached 2s)."""

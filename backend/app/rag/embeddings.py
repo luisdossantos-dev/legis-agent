@@ -87,8 +87,9 @@ class EmbeddingsProvider:
         """Try to initialise the OpenAI embedding client."""
         try:
             from openai import OpenAI as OpenAIEmbed
-
-            self._client = OpenAIEmbed(api_key=api_key)
+            import httpx
+            http_client = httpx.Client(timeout=httpx.Timeout(30.0, connect=10.0))
+            self._client = OpenAIEmbed(api_key=api_key, http_client=http_client)
             self._impl = "openai"
             logger.info("Embeddings: using OpenAI (%s, %d dim)", _OPENAI_MODEL, _OPENAI_DIM)
             return True
@@ -162,11 +163,23 @@ class EmbeddingsProvider:
             return self._mock_embeddings(texts)
 
         try:
-            response = self._client.embeddings.create(  # type: ignore[union-attr]
-                model=_OPENAI_MODEL,
-                input=texts,
-                dimensions=settings.EMBEDDING_DIMENSIONS,
+            from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+
+            @retry(
+                stop=stop_after_attempt(3),
+                wait=wait_exponential(multiplier=1.0, min=1.0, max=10.0),
+                retry=retry_if_exception_type((ConnectionError, TimeoutError)),
+                reraise=True,
             )
+            def _call_embeddings():
+                return self._client.embeddings.create(  # type: ignore[union-attr]
+                    model=_OPENAI_MODEL,
+                    input=texts,
+                    dimensions=settings.EMBEDDING_DIMENSIONS,
+                )
+
+            import asyncio
+            response = await asyncio.to_thread(_call_embeddings)
             return [item.embedding for item in response.data]
 
         except Exception as e:

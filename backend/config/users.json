@@ -8,9 +8,9 @@
       "office": "main",
       "display_name": "Administrator",
       "is_active": true,
-      "hashed_password": "4d9fb851ee85c2bdbf38626ff8e555ac:672f2b956840fc3a65fc6db89815142c50f8be1e826f45b18af1538513d713b2",
+      "hashed_password": "2263bf4becf20ff99b031c2a6a1addcc:73cb44f82f2b40783cce74bf12d7ae1916054897ad98717a328f283156ac7003",
       "created_at": "2026-07-28T06:34:07.581662",
-      "updated_at": "2026-07-28T06:34:07.581680"
+      "updated_at": "2026-07-28T12:15:52.508552"
     }
   ]
 }

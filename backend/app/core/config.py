@@ -95,6 +95,20 @@ class Settings(BaseSettings):
     UPLOAD_DIR: str = "./uploads"
     MAX_UPLOAD_SIZE: int = 50 * 1024 * 1024  # 50 MB
 
+    @model_validator(mode="after")
+    def _validate_upload_dir(self):
+        """Prevent path traversal via UPLOAD_DIR."""
+        from pathlib import Path
+        resolved = Path(self.UPLOAD_DIR).resolve()
+        # Block any upload dir that resolves outside the project
+        # or contains path traversal components
+        if ".." in self.UPLOAD_DIR.split("/"):
+            raise ValueError(
+                f"UPLOAD_DIR '{self.UPLOAD_DIR}' contains '..' path traversal. "
+                "Use an absolute or project-relative path without '..'."
+            )
+        return self
+
     # ── Alerting / Monitoring ───────────────────────────────────
     # Webhook URL for sending production alerts (Slack, Discord, etc.).
     # If empty, alerts are logged but not sent externally.

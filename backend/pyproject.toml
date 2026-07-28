@@ -21,6 +21,7 @@ dependencies = [
     "slowapi>=0.1.9",
     "prometheus-client>=0.21",
     "rank-bm25>=0.2",
+    "tenacity>=9.0",
 ]
 
 [project.optional-dependencies]
