@@ -214,7 +214,7 @@ function App() {
           />
         </aside>
 
-        <section className="content" aria-label="Main content">
+        <section className="content view-transition" key={currentView} aria-label="Main content">
           {currentView === "analyze" && selectedDoc && (
             <AnalysisResult
               document={selectedDoc}
