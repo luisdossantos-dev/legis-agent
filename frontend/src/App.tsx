@@ -10,13 +10,14 @@ import ActionDetector from "./components/ActionDetector";
 import ClauseReview from "./components/ClauseReview";
 import UserManager from "./components/UserManager";
 import CostDashboard from "./components/CostDashboard";
+import PipelineWorkflow from "./components/PipelineWorkflow";
 import SettingsModal from "./components/SettingsModal";
 import ToastContainer, { showToast } from "./components/Toast";
 import { apiClient } from "./api/client";
 import { t } from "./i18n";
 import type { DocumentSummary, AnalysisResult as AnalysisResultType } from "./api/client";
 
-type View = "upload" | "analyze" | "chat" | "email" | "classify" | "action" | "review" | "users" | "dashboard";
+type View = "upload" | "analyze" | "chat" | "email" | "classify" | "action" | "review" | "users" | "dashboard" | "pipeline";
 
 const API_BASE = "http://localhost:8000";
 const API_PREFIX = "/api/v1";
@@ -83,6 +84,19 @@ function App() {
     }
   }, [backendStatus, apiConfigured]);
 
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+, or Cmd+, → Open settings
+      if ((e.metaKey || e.ctrlKey) && e.key === ",") {
+        e.preventDefault();
+        setSettingsOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const handleUploadComplete = () => {
     apiClient.listDocuments().then(setDocuments).catch(console.error);
   };
@@ -143,6 +157,21 @@ function App() {
     setCurrentView("email");
   };
 
+  const handlePipeline = (doc: DocumentSummary) => {
+    if (!apiConfigured) {
+      showToast(
+        "warning",
+        t("toast.apiKeyMissing.title"),
+        t("toast.apiKeyMissing.analyze"),
+        false
+      );
+      setSettingsOpen(true);
+      return;
+    }
+    setSelectedDoc(doc);
+    setCurrentView("pipeline");
+  };
+
   const handleSettingsSave = () => {
     checkHealth(); // re-check to update apiConfigured status
   };
@@ -197,6 +226,9 @@ function App() {
             <AnalysisResult
               document={selectedDoc}
               analysis={analysis}
+              onChat={handleChat}
+              onDraftEmail={handleDraftEmail}
+              onPipeline={handlePipeline}
             />
           )}
           {currentView === "chat" && selectedDoc && (
@@ -220,8 +252,11 @@ function App() {
           {currentView === "dashboard" && (
             <CostDashboard />
           )}
+          {currentView === "pipeline" && selectedDoc && (
+            <PipelineWorkflow document={selectedDoc} />
+          )}
 
-          {!selectedDoc && currentView !== "email" && currentView !== "classify" && currentView !== "action" && currentView !== "review" && currentView !== "users" && currentView !== "dashboard" && (
+          {!selectedDoc && currentView !== "email" && currentView !== "classify" && currentView !== "action" && currentView !== "review" && currentView !== "users" && currentView !== "dashboard" && currentView !== "pipeline" && (
             <div className="welcome">
               <h2>{t("welcome.title")}</h2>
               <p>{t("welcome.description")}</p>

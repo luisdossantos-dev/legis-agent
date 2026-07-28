@@ -4,13 +4,20 @@ import { t } from "../i18n";
 interface AnalysisResultProps {
   document: DocumentSummary;
   analysis: AnalysisResultType | null;
+  onDraftEmail?: (doc: DocumentSummary) => void;
+  onChat?: (doc: DocumentSummary) => void;
+  onPipeline?: (doc: DocumentSummary) => void;
 }
 
-function AnalysisResult({ document, analysis }: AnalysisResultProps) {
+function AnalysisResult({ document, analysis, onDraftEmail, onChat, onPipeline }: AnalysisResultProps) {
   if (!analysis) {
     return (
       <div className="analysis-container">
         <h2 className="analysis-title">{document.filename}</h2>
+        <div className="skeleton" style={{ height: 20, width: "60%", marginTop: 16 }} />
+        <div className="skeleton" style={{ height: 80, width: "100%", marginTop: 12 }} />
+        <div className="skeleton" style={{ height: 20, width: "40%", marginTop: 16 }} />
+        <div className="skeleton" style={{ height: 60, width: "100%", marginTop: 12 }} />
         <div className="loading" style={{ marginTop: 24 }} role="status" aria-live="polite">
           {t("analysis.analyzing")}
         </div>
@@ -20,12 +27,50 @@ function AnalysisResult({ document, analysis }: AnalysisResultProps) {
 
   return (
     <div className="analysis-container">
-      <h2 className="analysis-title">
-        {analysis.document_type || t("analysis.title")}
-      </h2>
-      <p style={{ color: "var(--color-text-secondary)", marginBottom: 24 }}>
-        {document.filename}
-      </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16, flexWrap: "wrap", gap: 8 }}>
+        <div>
+          <h2 className="analysis-title" style={{ margin: 0 }}>
+            {analysis.document_type || t("analysis.title")}
+          </h2>
+          <p style={{ color: "var(--color-text-secondary)", fontSize: 13, marginTop: 4 }}>
+            {document.filename}
+          </p>
+        </div>
+
+        {/* Action buttons */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {onChat && (
+            <button
+              className="btn-primary"
+              onClick={() => onChat(document)}
+              style={{ fontSize: 12, padding: "7px 16px" }}
+              title={t("documents.chat")}
+            >
+              💬 {t("documents.chat")}
+            </button>
+          )}
+          {onDraftEmail && (
+            <button
+              className="doc-btn"
+              onClick={() => onDraftEmail(document)}
+              style={{ fontSize: 12, fontWeight: 600 }}
+              title={t("documents.email")}
+            >
+              📧 {t("documents.email")}
+            </button>
+          )}
+          {onPipeline && (
+            <button
+              className="doc-btn"
+              onClick={() => onPipeline(document)}
+              style={{ fontSize: 12, fontWeight: 600 }}
+              title={t("pipeline.title")}
+            >
+              🔧 {t("pipeline.title")}
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* Summary */}
       {analysis.summary && (
@@ -124,6 +169,29 @@ function AnalysisResult({ document, analysis }: AnalysisResultProps) {
           </ul>
         </div>
       )}
+
+      {/* Bottom actions */}
+      <div style={{ marginTop: 32, paddingTop: 20, borderTop: "1px solid var(--color-border)", display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 13, color: "var(--color-text-secondary)", alignSelf: "center" }}>
+          📋 {t("analysis.title")} — {t("documents.pagesChunks", String(document.pages), String(document.chunks))}
+        </span>
+        <div style={{ flex: 1 }} />
+        {onChat && (
+          <button className="doc-btn" onClick={() => onChat(document)} style={{ fontWeight: 600 }}>
+            💬 {t("documents.chat")}
+          </button>
+        )}
+        {onDraftEmail && (
+          <button className="doc-btn" onClick={() => onDraftEmail(document)} style={{ fontWeight: 600 }}>
+            📧 {t("documents.email")}
+          </button>
+        )}
+        {onPipeline && (
+          <button className="doc-btn" onClick={() => onPipeline(document)} style={{ fontWeight: 600 }}>
+            🔧 {t("pipeline.title")}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

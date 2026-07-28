@@ -101,23 +101,40 @@ function AgentChat({ document }: AgentChatProps) {
       </div>
 
       <div className="chat-input-area">
-        <input
-          className="chat-input"
-          type="text"
-          placeholder={t("chat.placeholder")}
-          aria-label={t("chat.placeholder")}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={loading}
-        />
+        <div style={{ flex: 1, position: "relative" }}>
+          <input
+            className="chat-input"
+            type="text"
+            placeholder={t("chat.placeholder")}
+            aria-label={t("chat.placeholder")}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={loading}
+            style={{ width: "100%", paddingRight: 100 }}
+          />
+          <span
+            style={{
+              position: "absolute",
+              right: 12,
+              top: "50%",
+              transform: "translateY(-50%)",
+              fontSize: 10,
+              color: "var(--color-text-secondary)",
+              opacity: 0.5,
+              pointerEvents: "none",
+            }}
+          >
+            {t("chat.send")} ↵
+          </span>
+        </div>
         <button
           className="chat-send-btn"
           onClick={handleSend}
           disabled={loading || !input.trim()}
           aria-label={loading ? t("chat.sendingAria") : t("chat.sendAria")}
         >
-          {loading ? "..." : t("chat.send")}
+          {loading ? "..." : "→"}
         </button>
       </div>
     </div>

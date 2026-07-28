@@ -204,6 +204,36 @@ const translations: Record<string, any> = {
   "dashboard.table.success": { en: "✅ Success Rates", fr: "✅ Taux de Réussite" },
   "dashboard.noCostData": { en: "No cost data recorded yet.", fr: "Aucune donnée de coût enregistrée." },
   "dashboard.noCallData": { en: "No call data recorded yet.", fr: "Aucune donnée d'appel enregistrée." },
+
+  // ══════════════════════════════════════════════════════════════
+  // PIPELINE / WORKFLOW
+  // ══════════════════════════════════════════════════════════════
+  "pipeline.title": { en: "🔧 Agent Pipeline", fr: "🔧 Pipeline d'Agent" },
+  "pipeline.description": { en: "Configure and run a multi-step agent pipeline on this document.", fr: "Configurez et exécutez un pipeline multi-étapes sur ce document." },
+  "pipeline.steps": { en: "Pipeline Steps", fr: "Étapes du Pipeline" },
+  "pipeline.run": { en: "▶️ Run Pipeline", fr: "▶️ Exécuter le Pipeline" },
+  "pipeline.running": { en: "Running pipeline...", fr: "Exécution du pipeline..." },
+  "pipeline.result": { en: "Pipeline Result", fr: "Résultat du Pipeline" },
+  "pipeline.steps.extract": { en: "📋 Extract", fr: "📋 Extraire" },
+  "pipeline.steps.extract.desc": { en: "Quick metadata extraction (parties, dates, amounts)", fr: "Extraction rapide des métadonnées (parties, dates, montants)" },
+  "pipeline.steps.analyze": { en: "🔍 Analyze", fr: "🔍 Analyser" },
+  "pipeline.steps.analyze.desc": { en: "Full structured document analysis", fr: "Analyse structurée complète du document" },
+  "pipeline.steps.review": { en: "⚖️ Review", fr: "⚖️ Réviser" },
+  "pipeline.steps.review.desc": { en: "Legal review of the draft", fr: "Révision juridique du brouillon" },
+  "pipeline.steps.draft": { en: "✍️ Draft", fr: "✍️ Rédiger" },
+  "pipeline.steps.draft.desc": { en: "Generate response/email draft", fr: "Générer un brouillon de réponse/email" },
+  "pipeline.steps.send": { en: "📨 Send", fr: "📨 Envoyer" },
+  "pipeline.steps.send.desc": { en: "Final formatting and assembly", fr: "Mise en forme et assemblage final" },
+  "pipeline.stepsExecuted": { en: "Steps executed", fr: "Étapes exécutées" },
+  "pipeline.processingTime": { en: "Processing time", fr: "Temps de traitement" },
+  "pipeline.toast.error": { en: "Pipeline execution failed", fr: "Échec de l'exécution du pipeline" },
+
+  // ══════════════════════════════════════════════════════════════
+  // KEYBOARD SHORTCUTS
+  // ══════════════════════════════════════════════════════════════
+  "shortcut.sendMessage": { en: "Ctrl+Enter to send", fr: "Ctrl+Entrée pour envoyer" },
+  "shortcut.toggleTheme": { en: "Toggle theme", fr: "Changer le thème" },
+  "shortcut.openSettings": { en: "Open settings", fr: "Ouvrir les paramètres" },
 };
 
 // ── Helpers ─────────────────────────────────────────────────────

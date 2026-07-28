@@ -87,25 +87,35 @@ function EmailDraft({ document }: EmailDraftProps) {
     <div style={{ maxWidth: 900, margin: "0 auto" }}>
       <h2 style={{ fontSize: 22, marginBottom: 20 }}>{t("email.title")}</h2>
 
-      {/* Document context banner */}
+      {/* Document context banner — unified Document → Email flow */}
       {document && (
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            padding: "10px 14px",
-            marginBottom: 16,
-            backgroundColor: "rgba(99,102,241,0.1)",
+            padding: "12px 16px",
+            marginBottom: 20,
+            background: "linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08))",
             border: "1px solid var(--color-primary)",
-            borderRadius: "var(--radius)",
+            borderRadius: "var(--radius-lg)",
+            gap: 12,
+            flexWrap: "wrap",
           }}
         >
-          <div style={{ fontSize: 13, color: "var(--color-text)" }}>
-            📄 <strong>Document:</strong> {document.filename}{" "}
-            <span style={{ color: "var(--color-text-secondary)" }}>
-              ({document.pages} pages, {document.chunks} chunks)
-            </span>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 24, lineHeight: 1 }}>📄</span>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-primary)" }}>
+                📨 {t("email.generate")} {t("documents.email")}
+              </div>
+              <div style={{ fontSize: 12, color: "var(--color-text)", marginTop: 2 }}>
+                <strong>{document.filename}</strong>
+                <span style={{ color: "var(--color-text-secondary)" }}>
+                  {" "}— {document.pages} pages, {document.chunks} chunks
+                </span>
+              </div>
+            </div>
           </div>
           <label
             style={{
@@ -116,14 +126,20 @@ function EmailDraft({ document }: EmailDraftProps) {
               cursor: "pointer",
               color: "var(--color-primary)",
               fontWeight: 600,
+              padding: "6px 12px",
+              borderRadius: "var(--radius)",
+              border: "1px solid var(--color-primary)",
+              backgroundColor: "var(--color-primary-bg)",
+              userSelect: "none",
             }}
           >
             <input
               type="checkbox"
               checked={useDocContext}
               onChange={(e) => setUseDocContext(e.target.checked)}
+              style={{ cursor: "pointer" }}
             />
-            Use doc context
+            {t("email.useDocContext")}
           </label>
         </div>
       )}
