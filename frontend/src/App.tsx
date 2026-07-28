@@ -13,6 +13,7 @@ import CostDashboard from "./components/CostDashboard";
 import PipelineWorkflow from "./components/PipelineWorkflow";
 import SettingsModal from "./components/SettingsModal";
 import SidebarNav from "./components/SidebarNav";
+import CommandPalette from "./components/CommandPalette";
 import ToastContainer, { showToast } from "./components/Toast";
 import { apiClient } from "./api/client";
 import { t } from "./i18n";
@@ -40,6 +41,7 @@ function App() {
   const [analysis, setAnalysis] = useState<AnalysisResultType | null>(null);
   const [currentView, setCurrentView] = useState<View>("upload");
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [apiConfigured, setApiConfigured] = useState(false);
 
   const checkHealth = useCallback(async () => {
@@ -92,6 +94,11 @@ function App() {
       if ((e.metaKey || e.ctrlKey) && e.key === ",") {
         e.preventDefault();
         setSettingsOpen(true);
+      }
+      // Ctrl+K or Cmd+K → Open command palette
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setPaletteOpen(true);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -281,6 +288,14 @@ function App() {
           )}
         </section>
       </main>
+
+      <CommandPalette
+        isOpen={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onNavigate={handleNavigate}
+        onOpenSettings={() => setSettingsOpen(true)}
+        onRefresh={handleUploadComplete}
+      />
 
       <SettingsModal
         isOpen={settingsOpen}
