@@ -46,6 +46,9 @@ const translations: Record<string, any> = {
   "header.users": { en: "🔐 Users", fr: "🔐 Utilisateurs" },
   "header.settings": { en: "⚙️ Settings", fr: "⚙️ Paramètres" },
   "header.refresh": { en: "↻ Refresh documents", fr: "↻ Actualiser les documents" },
+  "header.theme": { en: "Toggle theme", fr: "Changer le thème" },
+  "header.light": { en: "☀️ Light", fr: "☀️ Clair" },
+  "header.dark": { en: "🌙 Dark", fr: "🌙 Sombre" },
 
   // ══════════════════════════════════════════════════════════════
   // WELCOME
@@ -69,6 +72,8 @@ const translations: Record<string, any> = {
   "documents.chat": { en: "Chat", fr: "Discuter" },
   "documents.email": { en: "📧 Email", fr: "📧 Email" },
   "documents.pagesChunks": (p: string, c: string) => ({ en: `${p} pages · ${c} chunks`, fr: `${p} pages · ${c} fragments` }),
+  "documents.btnTooltip.noApiKey": { en: "🔑 Configure API key in Settings to enable actions", fr: "🔑 Configurez une clé API dans Paramètres pour activer les actions" },
+  "documents.btnTooltip.indexing": { en: "⏳ Document is still indexing...", fr: "⏳ Document en cours d'indexation..." },
 
   // ══════════════════════════════════════════════════════════════
   // UPLOAD
@@ -159,7 +164,10 @@ const translations: Record<string, any> = {
   "settings.keepKey": { en: "✓ Previously configured (leave empty to keep existing key)", fr: "✓ Déjà configuré (laissez vide pour conserver la clé existante)" },
   "settings.keyRequired": { en: "Enter an API key to configure this provider.", fr: "Saisissez une clé API pour configurer ce fournisseur." },
   "settings.configError": { en: "Could not load configuration.", fr: "Impossible de charger la configuration." },
+  "settings.saveSuccess": (provider: string) => ({ en: `✅ ${provider} configured successfully!`, fr: `✅ ${provider} configuré avec succès !` }),
   "settings.saveError": { en: "Failed to save.", fr: "Échec de l'enregistrement." },
+  "settings.keyNote": { en: "API keys are stored in memory for the current session. You may need to re-enter if the backend restarts.", fr: "Les clés API sont stockées en mémoire pour la session en cours. Vous devrez peut-être les ressaisir si le backend redémarre." },
+  "settings.persistsNote": { en: "💡 Tip: API keys persist in backend config file. On restart, the key is reloaded automatically.", fr: "💡 Astuce : Les clés API persistent dans le fichier de configuration. Au redémarrage, la clé est rechargée automatiquement." },
 
   // ══════════════════════════════════════════════════════════════
   // TOAST
@@ -202,11 +210,17 @@ const translations: Record<string, any> = {
 
 export type Lang = "en" | "fr";
 
-let _currentLang: Lang = "en";
+// Restore language preference from localStorage, fallback to browser language or English
+const savedLang = (typeof window !== "undefined" ? localStorage.getItem("legis-lang") : null) as Lang | null;
+const browserLang = typeof navigator !== "undefined" ? (navigator.language?.startsWith("fr") ? "fr" as Lang : "en" as Lang) : "en";
+let _currentLang: Lang = savedLang || browserLang || "en";
 const _listeners: Array<(lang: Lang) => void> = [];
 
 export function setLanguage(lang: Lang) {
   _currentLang = lang;
+  if (typeof window !== "undefined") {
+    localStorage.setItem("legis-lang", lang);
+  }
   _listeners.forEach((fn) => fn(lang));
 }
 

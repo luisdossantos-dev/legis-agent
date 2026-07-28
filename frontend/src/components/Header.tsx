@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useLanguage, t, type Lang } from "../i18n";
 
 interface HeaderProps {
@@ -16,6 +17,22 @@ interface HeaderProps {
 function Header({ backendStatus, onRefresh, onOpenSettings, onNewEmail, onClassify, onAction, onReview, onUsers, onDashboard, apiConfigured }: HeaderProps) {
   const { lang, setLanguage } = useLanguage();
 
+  // ── Theme management ──────────────────────────
+  const [theme, setTheme] = useState<string>(() => {
+    return localStorage.getItem("legis-theme") || "dark";
+  });
+
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    localStorage.setItem("legis-theme", next);
+    document.documentElement.setAttribute("data-theme", next);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
   const statusLabels: Record<string, string> = {
     checking: t("header.status.checking"),
     online: apiConfigured ? t("header.status.connected") : t("status.noApiKey"),
@@ -26,6 +43,28 @@ function Header({ backendStatus, onRefresh, onOpenSettings, onNewEmail, onClassi
     <header className="header">
       <div className="header-left">
         <span className="header-logo">{t("app.name")}</span>
+        {!apiConfigured && backendStatus === "online" && (
+          <span
+            onClick={onOpenSettings}
+            style={{
+              fontSize: 11,
+              color: "var(--color-warning)",
+              backgroundColor: "rgba(245,158,11,0.12)",
+              border: "1px solid var(--color-warning)",
+              borderRadius: "var(--radius)",
+              padding: "2px 10px",
+              cursor: "pointer",
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+            }}
+            title="Configure API Key"
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter') onOpenSettings(); }}
+          >
+            ⚠️ {t("status.noApiKey")}
+          </span>
+        )}
       </div>
       <div className="header-right">
         {/* ── Language switcher ─────────────────── */}
@@ -114,13 +153,17 @@ function Header({ backendStatus, onRefresh, onOpenSettings, onNewEmail, onClassi
         >
           {statusLabels[backendStatus]}
         </span>
-        {!apiConfigured && backendStatus === "online" && (
-          <span style={{ fontSize: 12, color: "var(--color-warning)" }} aria-hidden="true">
-            ⚠️
-          </span>
-        )}
         <button
-          className="doc-btn"
+          className="doc-btn keep-visible"
+          onClick={toggleTheme}
+          title={t("header.theme")}
+          aria-label={t("header.theme")}
+          style={{ fontWeight: 600, fontSize: 16 }}
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
+        <button
+          className="doc-btn keep-visible"
           onClick={onOpenSettings}
           title={t("header.settings")}
           aria-label={t("header.settings")}

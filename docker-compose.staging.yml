@@ -1,0 +1,54 @@
+# ═══════════════════════════════════════════════════
+# Legis Agent — Staging Environment
+# ═══════════════════════════════════════════════════
+# Standalone Docker Compose file for a pre-production
+# staging instance isolated from the development stack.
+#
+# Usage:
+#   docker compose -p legis-staging -f docker-compose.staging.yml up -d
+#
+# Starts the backend on port 8001 with production-like
+# settings (no hot-reload, no local volume mount).
+# ═══════════════════════════════════════════════════
+
+services:
+  # ── Database ──────────────────────────────────────────────
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: legisagent
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"                     # different port → no conflict with dev DB
+    volumes:
+      - pgdata_staging:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d legisagent"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend ──────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=staging
+      - HOST=0.0.0.0
+      - PORT=8001
+      - VECTOR_STORE_PROVIDER=pgvector
+      - DATABASE_URL=postgresql+psycopg2://user:password@db:5432/legisagent
+      - LITELLM_API_KEY=${LITELLM_API_KEY:-}
+      - LITELLM_MODEL=${LITELLM_MODEL:-openai/gpt-4o}
+      - LITELLM_FALLBACK_MODEL=${LITELLM_FALLBACK_MODEL:-anthropic/claude-3-haiku}
+    ports:
+      - "8001:8001"
+    # No local volume mount → uses the built image (production-like)
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata_staging:

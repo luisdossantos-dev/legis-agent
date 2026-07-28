@@ -4,9 +4,23 @@
 
 Desktop AI Agent system for legal/notarial document analysis and drafting. Combines a **Python (FastAPI + LangGraph + RAG)** backend with a **Rust + Tauri** desktop GUI and a **React + TypeScript** frontend.
 
+🌙 **Dark & Light mode** — Toggle between dark and light themes via the header button. Preference is saved in your browser.
+
+🌐 **Bilingual UI** — Switch between **English** and **French** at any time via the language selector. All user-facing strings are fully translated.
+
 ---
 
 ## ✨ Features
+
+### 🎨 User Interface
+| Feature | Description |
+|---------|-------------|
+| **🌙 Dark / ☀️ Light Mode** | Toggle themes from the header — persists in localStorage |
+| **🌐 Bilingual (EN/FR)** | English and French translations for all user-facing strings |
+| **Responsive Layout** | Adapts from full desktop to narrow windows gracefully |
+| **Toast Notifications** | Non-intrusive feedback for operations, warnings, and errors |
+| **Keyboard Navigation** | Full keyboard support for all interactive elements |
+| **Skeleton Loading** | Shimmer placeholders during analysis and chat responses |
 
 ### 📄 Document Processing
 | Feature | Description |
@@ -50,6 +64,7 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | Feature | Description |
 |---------|-------------|
 | **Smart Drafting** | Template-based email generation with RAG context |
+| **Document → Email** | Select a document and generate a context-aware email with one click |
 | **Classification** | Hybrid embedding + LLM email categorization (6 categories) |
 | **Action Detection** | Detect and execute actions from emails (reply, forward, schedule) |
 | **Multi-Language** | Generate emails in ES, EN, FR, PT |
@@ -73,7 +88,7 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | **Langfuse Tracing** | Full trace trees for agent executions (optional) |
 | **Prometheus Metrics** | `/metrics` endpoint for scraping |
 | **Cost Estimation** | Per-call cost tracking with monthly projections |
-| **Performance Profiling** | Automatic slow-request detection (>5s warning, >30s critical) |
+| **Performance Profiling** | Automatic slow-request detection (>5s warning, >30s critical) 🐢
 
 ### 🧪 CI & Evaluation
 | Feature | Description |
@@ -285,9 +300,22 @@ API keys and provider selection persist in `backend/config/runtime.json` and can
 
 The application supports **English** and **French** for the user interface.
 
-- Language switcher in the header bar
+- Language switcher in the header bar — selection persists in localStorage
 - All user-facing strings translated (100+ translation keys)
 - Translates: navigation, document management, chat, email tools, settings, audit viewer, dashboard
+- Language preference auto-detects from browser locale
+
+## 🎨 Theme Support
+
+The application supports **Dark** (default) and **Light** themes.
+
+- Theme toggle button in the header (🌙/☀️)
+- Preference persisted in localStorage
+- Smooth CSS transitions between themes
+- Light theme optimized for daytime use with adjusted contrast and shadows
+
+### CSS Custom Properties
+Theming is implemented entirely via CSS custom properties on `[data-theme="dark"]` and `[data-theme="light"]` selectors. Adding a new theme is as simple as adding a new `[data-theme="..."]` block in `App.css`.
 
 ---
 

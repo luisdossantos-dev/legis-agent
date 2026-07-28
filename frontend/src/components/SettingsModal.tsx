@@ -135,7 +135,7 @@ function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
       const responseData = await res.json();
       setMessage({
         type: "success",
-        text: `${t("settings.saveSuccess", currentProvider?.label || "")} LLM available: ${responseData.status?.llm_available}`,
+        text: `${t("settings.saveSuccess", currentProvider?.label || "Provider")} ${responseData.status?.llm_available ? "✅ LLM ready" : "⚠️ LLM not available"}`,
       });
       setTimeout(() => {
         onSave();
@@ -296,9 +296,12 @@ function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
               />
               {currentProvider.configured && (
                 <div style={{ fontSize: 11, color: "var(--color-success)", marginTop: 4 }}>
-                  ✓ Previously configured (leave empty to keep existing key)
+                  {t("settings.keepKey")}
                 </div>
               )}
+              <div style={{ fontSize: 11, color: "var(--color-text-secondary)", marginTop: 6, fontStyle: "italic" }}>
+                {t("settings.persistsNote")}
+              </div>
             </div>
 
             {/* ── Model selector ──────────────────── */}
