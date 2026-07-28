@@ -10,7 +10,7 @@ Orchestrates:
 
 import json
 import logging
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from app.core.email_llm import get_router, get_available_models
 from app.core.langfuse import observe
