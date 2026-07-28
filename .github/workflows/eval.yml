@@ -244,14 +244,14 @@ jobs:
 
       - name: Upload evaluation results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: promptfoo-results
           path: promptfoo/result.json
 
       - name: Upload baseline (main only)
         if: github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: eval-baseline
           path: promptfoo/.baseline.json
