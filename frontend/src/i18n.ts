@@ -94,6 +94,8 @@ const translations: Record<string, any> = {
   "chat.error": { en: "Error communicating with the agent", fr: "Erreur de communication avec l'agent" },
   "chat.title": (f: string) => ({ en: `Legal Chat — ${f}`, fr: `Discussion juridique — ${f}` }),
   "chat.welcome": (f: string) => ({ en: `Hi, I'm the legal assistant. You can ask me about "${f}". How can I help you?`, fr: `Bonjour, je suis l'assistant juridique. Vous pouvez me poser des questions sur "${f}". Comment puis-je vous aider ?` }),
+  "chat.sendAria": { en: "Send message", fr: "Envoyer le message" },
+  "chat.sendingAria": { en: "Sending...", fr: "Envoi..." },
 
   // ══════════════════════════════════════════════════════════════
   // ANALYSIS
@@ -125,6 +127,7 @@ const translations: Record<string, any> = {
   "email.generate": { en: "Generate Email", fr: "Générer l'Email" },
   "email.generating": { en: "Generating...", fr: "Génération..." },
   "email.showRaw": { en: "Raw JSON", fr: "JSON brut" },
+  "email.result.to": { en: "To", fr: "À" },
   "email.toast.error": { en: "Failed to generate email", fr: "Échec de la génération de l'email" },
 
   // ══════════════════════════════════════════════════════════════
@@ -168,6 +171,7 @@ const translations: Record<string, any> = {
   "settings.saveError": { en: "Failed to save.", fr: "Échec de l'enregistrement." },
   "settings.keyNote": { en: "API keys are stored in memory for the current session. You may need to re-enter if the backend restarts.", fr: "Les clés API sont stockées en mémoire pour la session en cours. Vous devrez peut-être les ressaisir si le backend redémarre." },
   "settings.persistsNote": { en: "💡 Tip: API keys persist in backend config file. On restart, the key is reloaded automatically.", fr: "💡 Astuce : Les clés API persistent dans le fichier de configuration. Au redémarrage, la clé est rechargée automatiquement." },
+  "settings.getKeyFrom": (provider: string) => ({ en: `Get your ${provider} key from the dashboard`, fr: `Obtenez votre clé ${provider} depuis le tableau de bord` }),
 
   // ══════════════════════════════════════════════════════════════
   // TOAST
