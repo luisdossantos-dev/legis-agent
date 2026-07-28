@@ -12,6 +12,7 @@ import UserManager from "./components/UserManager";
 import CostDashboard from "./components/CostDashboard";
 import PipelineWorkflow from "./components/PipelineWorkflow";
 import SettingsModal from "./components/SettingsModal";
+import SidebarNav from "./components/SidebarNav";
 import ToastContainer, { showToast } from "./components/Toast";
 import { apiClient } from "./api/client";
 import { t } from "./i18n";
@@ -176,41 +177,26 @@ function App() {
     checkHealth(); // re-check to update apiConfigured status
   };
 
+  const handleNavigate = (view: string) => {
+    // Views that don't require a selected document
+    const globalViews = ["email", "classify", "action", "review", "users", "dashboard", "pipeline"];
+    if (globalViews.includes(view)) {
+      setSelectedDoc(null);
+    }
+    setCurrentView(view as View);
+  };
+
   return (
     <div className="app">
       <Header
         backendStatus={backendStatus}
-        onRefresh={handleUploadComplete}
         onOpenSettings={() => setSettingsOpen(true)}
-        onNewEmail={() => {
-          setSelectedDoc(null);
-          setCurrentView("email");
-        }}
-        onClassify={() => {
-          setSelectedDoc(null);
-          setCurrentView("classify");
-        }}
-        onAction={() => {
-          setSelectedDoc(null);
-          setCurrentView("action");
-        }}
-        onReview={() => {
-          setSelectedDoc(null);
-          setCurrentView("review");
-        }}
-        onUsers={() => {
-          setSelectedDoc(null);
-          setCurrentView("users");
-        }}
-        onDashboard={() => {
-          setSelectedDoc(null);
-          setCurrentView("dashboard");
-        }}
         apiConfigured={apiConfigured}
       />
 
       <main className="main-content">
         <aside className="sidebar" aria-label="Document management">
+          <SidebarNav currentView={currentView} onNavigate={handleNavigate} />
           <DocumentUpload onUploadComplete={handleUploadComplete} />
           <DocumentList
             documents={documents}
