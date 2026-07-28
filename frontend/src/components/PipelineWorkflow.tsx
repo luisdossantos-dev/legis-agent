@@ -53,6 +53,11 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
   const handleRun = async () => {
     if (selectedSteps.length === 0) return;
 
+    const stepCount = selectedSteps.length;
+    if (!window.confirm(`Run ${stepCount} pipeline step${stepCount > 1 ? "s" : ""} on "${document.filename}"?\n\nThis may take 30–90 seconds.`)) {
+      return;
+    }
+
     startTimeRef.current = Date.now();
     setElapsedSeconds(0);
     setRunning(true);
