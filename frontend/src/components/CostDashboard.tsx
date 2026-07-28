@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { t } from "../i18n";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -122,7 +123,7 @@ function CostDashboard() {
     return (
       <div style={{ padding: 40, textAlign: "center", color: "var(--color-text-secondary)" }}>
         <div style={{ fontSize: 24, marginBottom: 12 }}>📊</div>
-        Loading dashboard data...
+        {t("app.loading")}
       </div>
     );
   }
@@ -275,7 +276,7 @@ function CostDashboard() {
         }}
       >
         <div>
-          <h2 style={{ fontSize: 22, margin: 0 }}>📊 Cost & Usage Dashboard</h2>
+          <h2 style={{ fontSize: 22, margin: 0 }}>{t("dashboard.title")}</h2>
           <div style={{ fontSize: 13, color: "var(--color-text-secondary)", marginTop: 4 }}>
             Uptime: {fmtDuration(data.uptime_seconds)} · Auto-refresh every 30s
           </div>
@@ -295,12 +296,12 @@ function CostDashboard() {
         }}
       >
         {[
-          { label: "Total Cost", value: fmtMoney(data.total_cost_usd), color: "var(--color-warning)" },
-          { label: "Monthly Est.", value: fmtMoney(data.monthly_estimate_usd) + "/mo", color: "var(--color-primary)" },
-          { label: "Operations", value: fmtNumber(data.total_operations), color: "var(--color-success)" },
-          { label: "Total Tokens", value: fmtNumber(data.total_tokens), color: "var(--color-accent)" },
-          { label: "Errors", value: fmtNumber(data.recent_errors.length), color: data.recent_errors.length > 0 ? "var(--color-error)" : "var(--color-success)" },
-          { label: "Models Used", value: fmtNumber(Object.keys(data.cost_by_model).length), color: "var(--color-primary)" },
+          { label: t("dashboard.card.totalCost"), value: fmtMoney(data.total_cost_usd), color: "var(--color-warning)" },
+          { label: t("dashboard.card.monthlyEst"), value: fmtMoney(data.monthly_estimate_usd) + "/mo", color: "var(--color-primary)" },
+          { label: t("dashboard.card.operations"), value: fmtNumber(data.total_operations), color: "var(--color-success)" },
+          { label: t("dashboard.card.tokens"), value: fmtNumber(data.total_tokens), color: "var(--color-accent)" },
+          { label: t("dashboard.card.errors"), value: fmtNumber(data.recent_errors.length), color: data.recent_errors.length > 0 ? "var(--color-error)" : "var(--color-success)" },
+          { label: t("dashboard.card.models"), value: fmtNumber(Object.keys(data.cost_by_model).length), color: "var(--color-primary)" },
         ].map((card) => (
           <div
             key={card.label}
@@ -332,13 +333,13 @@ function CostDashboard() {
             backgroundColor: "var(--color-surface)",
           }}
         >
-          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>💰 Daily Cost (Last 30 Days)</h3>
+          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>{t("dashboard.chart.dailyCost")}</h3>
           <div style={{ height: 220 }}>
             {data.daily_cost.some((d) => d.cost > 0) ? (
               <Line data={dailyCostData} options={chartOptions} />
             ) : (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-secondary)", fontSize: 13 }}>
-                No cost data recorded yet. Start using the LLM features to see charts.
+                {t("dashboard.noCostData")}
               </div>
             )}
           </div>
@@ -353,13 +354,13 @@ function CostDashboard() {
             backgroundColor: "var(--color-surface)",
           }}
         >
-          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>📞 Daily Calls</h3>
+          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>{t("dashboard.chart.dailyCalls")}</h3>
           <div style={{ height: 220 }}>
             {data.daily_cost.some((d) => d.calls > 0) ? (
               <Bar data={dailyCallsData} options={chartOptions} />
             ) : (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-secondary)", fontSize: 13 }}>
-                No call data recorded yet.
+                {t("dashboard.noCallData")}
               </div>
             )}
           </div>
@@ -377,13 +378,13 @@ function CostDashboard() {
             backgroundColor: "var(--color-surface)",
           }}
         >
-          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>🤖 Model Usage</h3>
+          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>{t("dashboard.chart.modelUsage")}</h3>
           <div style={{ height: 200 }}>
             {data.model_usage.length > 0 ? (
               <Doughnut data={modelUsageData} options={doughnutOptions} />
             ) : (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-secondary)", fontSize: 13 }}>
-                No data
+                {t("app.noData")}
               </div>
             )}
           </div>
@@ -398,13 +399,13 @@ function CostDashboard() {
             backgroundColor: "var(--color-surface)",
           }}
         >
-          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>💰 Cost by Model</h3>
+          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>{t("dashboard.chart.costByModel")}</h3>
           <div style={{ height: 200 }}>
             {Object.keys(data.cost_by_model).length > 0 ? (
               <Doughnut data={costByModelData} options={doughnutOptions} />
             ) : (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-secondary)", fontSize: 13 }}>
-                No data
+                {t("app.noData")}
               </div>
             )}
           </div>
@@ -419,20 +420,20 @@ function CostDashboard() {
             backgroundColor: "var(--color-surface)",
           }}
         >
-          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>⏱️ Latency Distribution</h3>
+          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>{t("dashboard.chart.latencyDist")}</h3>
           <div style={{ height: 200 }}>
             {Object.values(data.latency_distribution).some((v) => v > 0) ? (
               <Bar data={latencyDistData} options={chartOptions} />
             ) : (
               <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-secondary)", fontSize: 13 }}>
-                No data
+                {t("app.noData")}
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Tables Row ──────────────────────────── */}
+        {/* ── Tables Row ──────────────────────────── */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
         {/* Latency by Operation */}
         <div
@@ -443,7 +444,7 @@ function CostDashboard() {
             backgroundColor: "var(--color-surface)",
           }}
         >
-          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>⏱️ Latency by Operation (ms)</h3>
+          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>{t("dashboard.table.latency")}</h3>
           {Object.keys(data.latency_by_operation).length > 0 ? (
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
@@ -486,7 +487,7 @@ function CostDashboard() {
             backgroundColor: "var(--color-surface)",
           }}
         >
-          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>✅ Success Rates</h3>
+          <h3 style={{ fontSize: 14, margin: "0 0 12px 0", fontWeight: 600 }}>{t("dashboard.table.success")}</h3>
           {Object.keys(data.success_rates).length > 0 ? (
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
               <thead>
