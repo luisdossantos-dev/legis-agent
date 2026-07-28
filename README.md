@@ -10,26 +10,26 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎨 User Interface
+### User Interface
 | Feature | Description |
 |---------|-------------|
-| **🌙 Dark / ☀️ Light Mode** | Toggle themes from the header — persists in localStorage |
-| **🌐 Bilingual (EN/FR)** | English and French translations for all user-facing strings |
-| **Responsive Layout** | Adapts from full desktop to narrow windows gracefully |
-| **Toast Notifications** | Non-intrusive feedback for operations, warnings, and errors |
+| **Dark/Light Mode** | Toggle themes from the header — persists in localStorage |
+| **Bilingual (EN/FR)** | English and French translations for all user-facing strings |
+| **Responsive Layout** | Adapts from full desktop to narrow windows |
+| **Toast Notifications** | Feedback for operations, warnings, and errors |
 | **Keyboard Navigation** | Full keyboard support for all interactive elements |
 | **Skeleton Loading** | Shimmer placeholders during analysis and chat responses |
 
-### 📄 Document Processing
+### Document Processing
 | Feature | Description |
 |---------|-------------|
 | **Upload & Parse** | PDF, DOCX, TXT — automatic text extraction |
 | **Semantic Chunking** | French notarial structure detection (titres, chapitres, alinéas) |
 | **Background Indexing** | Async vector embedding for instant RAG retrieval |
 
-### 🧠 RAG Pipeline
+### RAG Pipeline
 | Feature | Description |
 |---------|-------------|
 | **Hybrid Search** | BM25 keyword + semantic cosine similarity with RRF fusion |
@@ -40,7 +40,7 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | **Multi-embedding Provider** | fastembed (local ONNX), OpenAI, or mock |
 | **French Notarial Chunking** | 15+ section patterns for French legal documents |
 
-### 🤖 LLM Routing
+### LLM Routing
 | Feature | Description |
 |---------|-------------|
 | **Multi-Provider** | OpenAI, Anthropic, Google, DeepSeek, Mistral, Groq, OpenRouter, custom endpoints |
@@ -50,7 +50,7 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | **Circuit Breaker** | Auto-fallback on provider failures |
 | **Cost Guards** | Per-call cost estimation with monthly projections |
 
-### 🔗 Agent Workflows
+### Agent Workflows
 | Feature | Description |
 |---------|-------------|
 | **Document Analysis** | Retrieve → analyze → structured report |
@@ -60,7 +60,7 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | **Streaming Chat** | Token-by-token real-time responses |
 | **Document → Email** | Select a document and generate a context-aware email |
 
-### 📧 Email Tools
+### Email Tools
 | Feature | Description |
 |---------|-------------|
 | **Smart Drafting** | Template-based email generation with RAG context |
@@ -69,7 +69,7 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | **Action Detection** | Detect and execute actions from emails (reply, forward, schedule) |
 | **Multi-Language** | Generate emails in ES, EN, FR, PT |
 
-### 🔐 Security & Compliance
+### Security & Compliance
 | Feature | Description |
 |---------|-------------|
 | **RBAC** | Role-based access (admin, notaire, assistant, stagiaire) |
@@ -80,7 +80,7 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | **Rate Limiting** | Per-role API call limits (200/min admin, 20/min stagiaire) |
 | **Sensitive Data Routing** | PII detection for GDPR-compliant provider selection |
 
-### 📊 Observability & Cost Tracking
+### Observability & Cost Tracking
 | Feature | Description |
 |---------|-------------|
 | **Interactive Dashboard** | Chart.js cost/day, model usage, latency distribution |
@@ -88,19 +88,19 @@ Desktop AI Agent system for legal/notarial document analysis and drafting. Combi
 | **Langfuse Tracing** | Full trace trees for agent executions (optional) |
 | **Prometheus Metrics** | `/metrics` endpoint for scraping |
 | **Cost Estimation** | Per-call cost tracking with monthly projections |
-| **Performance Profiling** | Automatic slow-request detection (>5s warning, >30s critical) 🐢
+| **Performance Profiling** | Automatic slow-request detection (>5s warning, >30s critical) |
 
-### 🧪 CI & Evaluation
+### CI & Evaluation
 | Feature | Description |
 |---------|-------------|
 | **Promptfoo Suite** | 21 tests across 8 categories (RAG, security, latency, etc.) |
 | **Regression Testing** | Baseline comparison rejects PRs with quality drops |
 | **GitHub Actions** | Backend tests, frontend build, and eval workflow |
-| **Quality Gates** | Accuracy ≥85%, cost <$0.10 increase, latency <5s P95 increase |
+| **Quality Gates** | Accuracy >=85%, cost <$0.10 increase, latency <5s P95 increase |
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # One command — installs everything and launches the app:
@@ -118,15 +118,15 @@ cd src-tauri && cargo tauri dev
 
 ### Options
 ```
-1  →  Full Desktop GUI (Tauri + Frontend + Backend)
-2  →  Backend only (API on localhost:8000)
-3  →  Frontend only (React on localhost:1420)
-4  →  Run backend tests
+1  ->  Full Desktop GUI (Tauri + Frontend + Backend)
+2  ->  Backend only (API on localhost:8000)
+3  ->  Frontend only (React on localhost:1420)
+4  ->  Run backend tests
 ```
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 legis-agent/
@@ -219,7 +219,7 @@ legis-agent/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
@@ -237,7 +237,7 @@ legis-agent/
 
 ---
 
-## 📋 API Reference
+## API Reference
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -273,7 +273,7 @@ legis-agent/
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 Copy `backend/.env.example` to `backend/.env`:
@@ -296,7 +296,7 @@ API keys and provider selection persist in `backend/config/runtime.json` and can
 
 ---
 
-## 🌐 Internationalization
+## Internationalization
 
 The application supports **English** and **French** for the user interface.
 
@@ -305,7 +305,7 @@ The application supports **English** and **French** for the user interface.
 - Translates: navigation, document management, chat, email tools, settings, audit viewer, dashboard
 - Language preference auto-detects from browser locale
 
-## 🎨 Theme Support
+## Theme Support
 
 The application supports **Dark** (default) and **Light** themes.
 
@@ -319,7 +319,7 @@ Theming is implemented entirely via CSS custom properties on `[data-theme="dark"
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Backend Tests
 ```bash
@@ -355,7 +355,7 @@ Quality gates:
 
 ---
 
-## 📦 Deployment
+## Deployment
 
 ### Production
 ```bash
@@ -372,13 +372,13 @@ cargo tauri build
 
 ---
 
-## 📄 License
+## License
 
 MIT
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)

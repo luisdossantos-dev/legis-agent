@@ -109,6 +109,27 @@ class TestEmailTemplateRegression:
             )
 
 
+@pytest.mark.asyncio
+class TestEmailDrafterRegression:
+    """Regression tests for email_drafter import bugs."""
+
+    async def test_email_drafter_imports_optional(self):
+        """
+        BUG: NameError: name 'Optional' is not defined in email_drafter.py
+        FIX: Added 'Optional' to the typing imports.
+        This test verifies the module imports cleanly.
+        """
+        try:
+            from app.agents.email_drafter import draft_email
+            assert draft_email is not None
+        except NameError as e:
+            pytest.fail(f"email_drafter module has an undefined name: {e}. "
+                        f"This is a regression of the missing Optional import bug.")
+        except ImportError as e:
+            # Module may not be importable if other deps are missing (acceptable in test env)
+            pass
+
+
 class TestModelRegression:
     """Regression tests for Pydantic model bugs."""
 

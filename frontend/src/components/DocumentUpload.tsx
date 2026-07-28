@@ -83,8 +83,8 @@ function DocumentUpload({ onUploadComplete }: DocumentUploadProps) {
   };
 
   return (
-    <div>
-      <div
+    <section aria-label={t("upload.ariaLabel")}>
+      <button
         className={`upload-zone ${dragging ? "dragging" : ""}`}
         onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
@@ -92,8 +92,7 @@ function DocumentUpload({ onUploadComplete }: DocumentUploadProps) {
         onDrop={handleDrop}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
-        role="button"
-        tabIndex={0}
+        type="button"
         aria-label={t("upload.ariaLabel")}
       >
         <input
@@ -113,13 +112,13 @@ function DocumentUpload({ onUploadComplete }: DocumentUploadProps) {
             : t("upload.dragDrop")}
         </div>
         <div className="upload-formats">{t("upload.formats")}</div>
-      </div>
+      </button>
       {error && (
         <div style={{ color: "var(--color-error)", fontSize: 13, marginTop: 8 }} role="alert">
           {error}
         </div>
       )}
-    </div>
+    </section>
   );
 }
 

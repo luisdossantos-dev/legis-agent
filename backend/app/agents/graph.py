@@ -67,6 +67,12 @@ class GraphState(TypedDict):
     document_type: str       # detected document type
 
 
+# ── Named constants ─────────────────────────────────────────
+_DEFAULT_TOP_K = 5
+_MAX_RETRIEVAL_CHUNKS = 20
+_DEFAULT_CHUNK_DISPLAY = 3
+
+
 # ── Node implementations ──────────────────────────────────────
 
 

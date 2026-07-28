@@ -27,4 +27,5 @@ def chunk_by_sections(text: str, min_chunk_size: int = 200, max_chunk_size: int 
     Returns:
         List of (chunk_text, chunk_index) tuples
     """
+    logger.warning("pdf_chunker.chunk_by_sections is deprecated. Use app.rag.chunker.chunk_by_sections directly.")
     return _base_chunk(text, min_chunk_size=min_chunk_size)
