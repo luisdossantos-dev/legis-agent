@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  # ── Base de datos pgvector para desarrollo ─────────────────
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: legisagent
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d legisagent"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend FastAPI ────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - HOST=0.0.0.0
+      - PORT=8000
+      - VECTOR_STORE_PROVIDER=pgvector
+      - DATABASE_URL=postgresql+psycopg2://user:password@db:5432/legisagent
+      - LITELLM_API_KEY=${LITELLM_API_KEY:-}
+      - LITELLM_MODEL=${LITELLM_MODEL:-openai/gpt-4o}
+      - LITELLM_FALLBACK_MODEL=${LITELLM_FALLBACK_MODEL:-anthropic/claude-3-haiku}
+    volumes:
+      - ./backend:/app
+      - uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  pgdata:
+  uploads:

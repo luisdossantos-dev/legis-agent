@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.egg
+dist/
+build/
+*.so
+
+# Node
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/debug/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+backend/.env
+
+# Runtime
+backend/config/runtime.json
+backend/logs/
+*.log
+
+# Uploads
+backend/uploads/
+
+# Benchmarks
+.benchmarks/
+
+# Coverage
+coverage/
+coverage.xml
+htmlcov/
+.coverage

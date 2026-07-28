@@ -1,0 +1,91 @@
+# Latency & Cost Monitoring Tests — Promptfoo
+# Verifies that the API responds within acceptable time limits
+# and that LLM calls stay within budget.
+# These are regression-sensitive: if latency or cost increases,
+# the PR should fail.
+
+tests:
+  # ── Health endpoint (always fast) ────────────────────────────
+  - description: "Latency — Health check under 100ms"
+    provider: "http:GET http://localhost:8000/health"
+    assert:
+      - type: latency
+        threshold: 100
+      - type: is-json
+
+  - description: "Latency — Config endpoint under 200ms"
+    provider: "http:GET http://localhost:8000/api/v1/system/config"
+    assert:
+      - type: latency
+        threshold: 200
+      - type: is-json
+
+  # ── Document list (no LLM) ──────────────────────────────────
+  - description: "Latency — Document list under 300ms (no LLM)"
+    provider: "http:GET http://localhost:8000/api/v1/documents/"
+    assert:
+      - type: latency
+        threshold: 300
+      - type: is-json
+
+  # ── Chat endpoint (LLM, streaming) ──────────────────────────
+  - description: "Cost — Chat endpoint under $0.03 per call"
+    provider: "http:POST http://localhost:8000/api/v1/agents/chat"
+    vars:
+      document_id: "eval-doc-1"
+      messages: []
+      query: "Who are the parties in this contract?"
+    assert:
+      - type: cost
+        threshold: 0.03
+      - type: latency
+        threshold: 15000
+
+  # ── Analysis endpoint ───────────────────────────────────────
+  - description: "Cost — Analysis endpoint under $0.08 per call"
+    provider: "http:POST http://localhost:8000/api/v1/agents/analyze"
+    vars:
+      document_id: "eval-doc-1"
+      query: "Analyze this legal document and extract its main components."
+    assert:
+      - type: cost
+        threshold: 0.08
+      - type: latency
+        threshold: 30000
+
+  # ── Email draft endpoint ────────────────────────────────────
+  - description: "Cost — Email draft under $0.05 per call"
+    provider: "http:POST http://localhost:8000/api/v1/email/draft"
+    vars:
+      act_type: "vente"
+      fields:
+        vendeur: "Test"
+        acheteur: "Test"
+        prix: "100000"
+        date_acte: "2025-01-01"
+        notaire: "Me Test"
+    assert:
+      - type: cost
+        threshold: 0.05
+      - type: latency
+        threshold: 15000
+
+  # ── Clause review endpoint ──────────────────────────────────
+  - description: "Cost — Clause review under $0.03 per call"
+    provider: "http:POST http://localhost:8000/api/v1/clauses/review"
+    vars:
+      clause_type: "prix"
+      clause_text: "Le prix de vente est fixé à 350000 euros."
+    assert:
+      - type: cost
+        threshold: 0.03
+      - type: latency
+        threshold: 10000
+
+  # ── Observability endpoint ──────────────────────────────────
+  - description: "Latency — Observability stats under 200ms"
+    provider: "http:GET http://localhost:8000/api/v1/observability/stats"
+    assert:
+      - type: latency
+        threshold: 200
+      - type: is-json

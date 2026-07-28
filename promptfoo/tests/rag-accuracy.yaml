@@ -1,0 +1,98 @@
+# RAG Accuracy Tests — Promptfoo
+# Verifies that the retrieval + LLM pipeline returns accurate, relevant answers.
+# Each test checks that the response contains expected entities from the document.
+
+tests:
+  # ── Contract parties ─────────────────────────────────────────
+  - description: "RAG — Extract parties from a sale contract"
+    vars:
+      __query__: "Who are the parties in this contract?"
+    assert:
+      - type: contains-any
+        value: ["Pierre Martin", "Sophie Dubois", "vendeur", "acheteur"]
+        threshold: 0.85
+      - type: cost
+        threshold: 0.05
+      - type: latency
+        threshold: 10000
+
+  - description: "RAG — Extract buyer and seller roles"
+    vars:
+      __query__: "Who is the buyer and who is the seller in this deed of sale?"
+    assert:
+      - type: contains-any
+        value: ["vendeur", "seller", "acheteur", "buyer", "acquéreur"]
+        threshold: 0.80
+
+  # ── Price / financial terms ─────────────────────────────────
+  - description: "RAG — Extract sale price"
+    vars:
+      __query__: "What is the sale price of the property?"
+    assert:
+      - type: contains-any
+        value: ["350000", "350 000", "EUR", "euros", "€"]
+        threshold: 0.85
+      - type: cost
+        threshold: 0.05
+
+  - description: "RAG — Extract payment terms"
+    vars:
+      __query__: "What are the payment terms and conditions?"
+    assert:
+      - type: contains-any
+        value: ["virement", "bank", "transfer", "paiement", "payment", "30 jours", "30 days"]
+        threshold: 0.75
+
+  # ── Dates ────────────────────────────────────────────────────
+  - description: "RAG — Extract document date"
+    vars:
+      __query__: "What is the date of this document?"
+    assert:
+      - type: contains-any
+        value: ["15 janvier 2025", "2025", "janvier", "January", "15"]
+        threshold: 0.85
+
+  - description: "RAG — Extract signature date"
+    vars:
+      __query__: "When was this document signed?"
+    assert:
+      - type: contains-any
+        value: ["signé", "signed", "date", "2025", "janvier"]
+        threshold: 0.75
+
+  # ── Property details ────────────────────────────────────────
+  - description: "RAG — Extract property description"
+    vars:
+      __query__: "What property is being sold? Describe its location and characteristics."
+    assert:
+      - type: contains-any
+        value: ["appartement", "property", "bien", "immobilier", "m²"]
+        threshold: 0.70
+
+  # ── Notary / legal details ─────────────────────────────────
+  - description: "RAG — Extract notary information"
+    vars:
+      __query__: "Who is the notary responsible for this deed?"
+    assert:
+      - type: contains-any
+        value: ["Maître", "Me", "notaire", "notary", "office"]
+        threshold: 0.75
+
+  # ── Negative / edge cases ───────────────────────────────────
+  - description: "RAG — Graceful handling of missing information"
+    vars:
+      __query__: "What is the penalty for early repayment?"
+    assert:
+      - type: contains-any
+        value: ["not found", "not mentioned", "no information", "does not appear", "no penalty", "ne figure pas", "pas mentionné"]
+        threshold: 0.50
+      - type: cost
+        threshold: 0.03
+
+  - description: "RAG — Response in French for French query"
+    vars:
+      __query__: "Quelles sont les clauses importantes de ce contrat ?"
+    assert:
+      - type: llm-rubric
+        value: "The response is written in French and addresses the question about important contract clauses"
+        threshold: 0.80

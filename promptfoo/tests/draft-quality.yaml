@@ -1,0 +1,111 @@
+# Draft Quality Tests — Promptfoo
+# Verifies that generated documents contain all required fields,
+# follow the correct format, and are legally coherent.
+
+tests:
+  # ── Email draft quality ─────────────────────────────────────
+  - description: "Draft — Email contains required fields (to, subject, body)"
+    provider: "http:POST http://localhost:8000/api/email/draft"
+    vars:
+      act_type: "vente"
+      fields:
+        vendeur: "Pierre Martin"
+        acheteur: "Sophie Dubois"
+        prix: "350000"
+        date_acte: "15 janvier 2025"
+        notaire: "Maître Dupont"
+    assert:
+      - type: contains-any
+        value: ["Pierre Martin", "Sophie Dubois", "sujet:", "Subject:", "Objet:", "cher", "Cher"]
+        threshold: 0.90
+      - type: is-json
+      - type: cost
+        threshold: 0.08
+      - type: latency
+        threshold: 15000
+
+  - description: "Draft — Acte de vente email has proper structure"
+    provider: "http:POST http://localhost:8000/api/email/draft"
+    vars:
+      act_type: "vente"
+      fields:
+        vendeur: "Jean Dupont"
+        acheteur: "Marie Martin"
+        prix: "250000"
+        date_acte: "20 mars 2025"
+        notaire: "Me Petit"
+    assert:
+      - type: llm-rubric
+        value: >
+          The response is a JSON object with 'to', 'subject', and 'body' fields.
+          The 'body' contains a professional email with greeting, main content,
+          and closing. It mentions both parties, the price, and the notary.
+        threshold: 0.85
+      - type: cost
+        threshold: 0.08
+
+  - description: "Draft — Power of attorney email with correct terminology"
+    provider: "http:POST http://localhost:8000/api/email/draft"
+    vars:
+      act_type: "pouvoir"
+      fields:
+        mandant: "Claire Bernard"
+        mandataire: "Paul Bernard"
+        objet: "gestion immobilière"
+        duree: "6 mois"
+        notaire: "Me Dubois"
+    assert:
+      - type: contains-any
+        value: ["pouvoir", "mandant", "mandataire", "Claire Bernard", "Paul Bernard"]
+        threshold: 0.85
+      - type: cost
+        threshold: 0.08
+
+  # ── Clause draft quality ────────────────────────────────────
+  - description: "Draft — Clause de prix with all required elements"
+    provider: "http:POST http://localhost:8000/api/deeds/draft-clause"
+    vars:
+      type_clause: "prix"
+      contexte: "Vente d'un appartement à Paris 6e, surface 85m², prix 450000 EUR"
+    assert:
+      - type: contains-any
+        value: ["prix", "euros", "€", "EUR", "450000", "paiement", "virement"]
+        threshold: 0.80
+      - type: cost
+        threshold: 0.10
+      - type: latency
+        threshold: 20000
+
+  - description: "Draft — Condition suspensive clause with bank loan"
+    provider: "http:POST http://localhost:8000/api/deeds/draft-clause"
+    vars:
+      type_clause: "condition_suspensive"
+      contexte: "Acquisition d'une maison à Lyon, prêt bancaire de 300000 EUR sur 20 ans"
+    assert:
+      - type: contains-any
+        value: ["condition suspensive", "prêt", "banque", "obtention", "délai", "30 jours"]
+        threshold: 0.80
+      - type: cost
+        threshold: 0.10
+
+  # ── Legal act generation quality ─────────────────────────────
+  - description: "Draft — Acte de vente generation with complete schema"
+    provider: "http:POST http://localhost:8000/api/acts/generate"
+    vars:
+      act_type: "vente"
+      language: "fr"
+      parties:
+        - nom: "Pierre Martin"
+          qualite: "vendeur"
+        - nom: "Sophie Dubois"
+          qualite: "acheteur"
+      bien: "Appartement Paris 6e"
+      prix: 350000
+    assert:
+      - type: contains-any
+        value: ["vente", "Pierre Martin", "Sophie Dubois", "Paris", "350000"]
+        threshold: 0.85
+      - type: cost
+        threshold: 0.20
+      - type: latency
+        threshold: 60000

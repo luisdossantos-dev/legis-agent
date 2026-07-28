@@ -1,0 +1,32 @@
+{
+  "provider": "openai",
+  "providers": {
+    "openai": {
+      "api_key": "sk-...",
+      "model": "gpt-4o"
+    },
+    "anthropic": {
+      "api_key": "sk-ant-...",
+      "model": "claude-sonnet-4-20250514"
+    },
+    "google": {
+      "api_key": "AIza...",
+      "model": "gemini-2.0-flash-001"
+    },
+    "azure": {
+      "api_key": "...",
+      "api_base": "https://<resource>.openai.azure.com",
+      "api_version": "2024-10-21",
+      "model": "gpt-4o"
+    },
+    "openrouter": {
+      "api_key": "sk-or-...",
+      "model": "openai/gpt-4o"
+    },
+    "opencode-go": {
+      "api_key": "ocg_...",
+      "api_base": "https://opencode.ai/zen/go/v1",
+      "model": "deepseek-v4-flash"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+# ── Git ────────────────────────────────────────────
+.git/
+
+# ── Python cache & build ──────────────────────────
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.benchmarks/
+.hypothesis/
+.coverage
+coverage.xml
+*.cover
+htmlcov/
+
+# ── Virtual environments ───────────────────────────
+.venv/
+venv/
+env/
+
+# ── Build artifacts ────────────────────────────────
+*.egg-info/
+*.egg
+dist/
+build/
+
+# ── Secrets & config (never ship to image) ────────
+config/runtime.json
+config/users.json
+config/runtime.local.json
+.env
+
+# ── Logs & local data ──────────────────────────────
+logs/
+uploads/
+
+# ── IDE ─────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+
+# ── Docker meta (not needed at runtime) ─────────────
+Dockerfile
+.dockerignore
