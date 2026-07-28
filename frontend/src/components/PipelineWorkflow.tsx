@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { apiClient, type DocumentSummary } from "../api/client";
+import type { DocumentSummary } from "../api/client";
 import { t } from "../i18n";
 
 interface PipelineWorkflowProps {
