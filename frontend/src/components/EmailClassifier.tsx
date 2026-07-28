@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { t } from "../i18n";
+import { inputBase, errorBox } from "../theme";
 
 const API_BASE = "http://localhost:8000";
 const API_PREFIX = "/api/v1";
@@ -108,7 +109,7 @@ function EmailClassifier() {
               placeholder="sender@example.com"
               value={fromAddress}
               onChange={(e) => setFromAddress(e.target.value)}
-              style={inputStyle}
+              style={inputBase}
             />
           </div>
 
@@ -119,7 +120,7 @@ function EmailClassifier() {
               placeholder="Email subject line"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              style={inputStyle}
+              style={inputBase}
             />
           </div>
 
@@ -130,7 +131,7 @@ function EmailClassifier() {
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={8}
-              style={{ ...inputStyle, resize: "vertical" }}
+              style={{ ...inputBase, resize: "vertical" }}
             />
           </div>
 
@@ -153,18 +154,7 @@ function EmailClassifier() {
           </button>
 
           {error && (
-            <div
-              role="alert"
-              style={{
-                marginTop: 16,
-                padding: 12,
-                backgroundColor: "rgba(239,68,68,0.1)",
-                border: "1px solid var(--color-error)",
-                borderRadius: "var(--radius)",
-                color: "var(--color-error)",
-                fontSize: 13,
-              }}
-            >
+            <div role="alert" style={errorBox}>
               {error}
             </div>
           )}
@@ -323,17 +313,5 @@ function EmailClassifier() {
     </div>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "10px 12px",
-  borderRadius: "var(--radius)",
-  border: "1px solid var(--color-border)",
-  backgroundColor: "var(--color-bg)",
-  color: "var(--color-text)",
-  fontSize: 14,
-  outline: "none",
-  boxSizing: "border-box",
-};
 
 export default EmailClassifier;

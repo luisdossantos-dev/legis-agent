@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { inputBase, errorBox } from "../theme";
 
 const API_BASE = "http://localhost:8000";
 const API_PREFIX = "/api/v1";
@@ -117,7 +118,7 @@ function ActionDetector() {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              style={inputStyle}
+              style={inputBase}
             >
               {CATEGORY_OPTIONS.map((c) => (
                 <option key={c.value} value={c.value}>
@@ -134,7 +135,7 @@ function ActionDetector() {
               placeholder="Email subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              style={inputStyle}
+              style={inputBase}
             />
           </div>
 
@@ -145,7 +146,7 @@ function ActionDetector() {
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={8}
-              style={{ ...inputStyle, resize: "vertical" }}
+              style={{ ...inputBase, resize: "vertical" }}
             />
           </div>
 
@@ -168,18 +169,7 @@ function ActionDetector() {
           </button>
 
           {error && (
-            <div
-              role="alert"
-              style={{
-                marginTop: 16,
-                padding: 12,
-                backgroundColor: "rgba(239,68,68,0.1)",
-                border: "1px solid var(--color-error)",
-                borderRadius: "var(--radius)",
-                color: "var(--color-error)",
-                fontSize: 13,
-              }}
-            >
+            <div role="alert" style={errorBox}>
               {error}
             </div>
           )}
@@ -352,17 +342,5 @@ function ActionDetector() {
     </div>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "10px 12px",
-  borderRadius: "var(--radius)",
-  border: "1px solid var(--color-border)",
-  backgroundColor: "var(--color-bg)",
-  color: "var(--color-text)",
-  fontSize: 14,
-  outline: "none",
-  boxSizing: "border-box",
-};
 
 export default ActionDetector;

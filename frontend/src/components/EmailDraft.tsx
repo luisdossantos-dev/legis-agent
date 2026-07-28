@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { apiClient, EmailDraftResponse, DocumentSummary } from "../api/client";
 import { validateEmailDraft } from "../api/validation";
-
 import { t } from "../i18n";
+import { inputBase, errorBox } from "../theme";
 
 const ACT_TYPES = [
   { value: "escritura" },
@@ -153,7 +153,7 @@ function EmailDraft({ document }: EmailDraftProps) {
             <select
               value={actType}
               onChange={(e) => setActType(e.target.value)}
-              style={inputStyle}
+              style={inputBase}
             >
               {ACT_TYPES.map((a) => (
                 <option key={a.value} value={a.value}>
@@ -198,7 +198,7 @@ function EmailDraft({ document }: EmailDraftProps) {
                 placeholder={field.replace(/_/g, " ")}
                 value={fields[field] || ""}
                 onChange={(e) => updateField(field, e.target.value)}
-                style={inputStyle}
+                style={inputBase}
               />
             </div>
           ))}
@@ -217,7 +217,7 @@ function EmailDraft({ document }: EmailDraftProps) {
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
-                style={inputStyle}
+                style={inputBase}
               >
                 <option value="es">Spanish</option>
                 <option value="en">English</option>
@@ -230,7 +230,7 @@ function EmailDraft({ document }: EmailDraftProps) {
               <select
                 value={sensitivity}
                 onChange={(e) => setSensitivity(e.target.value)}
-                style={inputStyle}
+                style={inputBase}
               >
                 <option value="normal">Normal</option>
                 <option value="private">Private (local model)</option>
@@ -250,7 +250,7 @@ function EmailDraft({ document }: EmailDraftProps) {
               value={customQuery}
               onChange={(e) => setCustomQuery(e.target.value)}
               rows={3}
-              style={{ ...inputStyle, resize: "vertical" }}
+              style={{ ...inputBase, resize: "vertical" }}
             />
           </div>
 
@@ -273,18 +273,7 @@ function EmailDraft({ document }: EmailDraftProps) {
           </button>
 
           {error && (
-            <div
-              role="alert"
-              style={{
-                marginTop: 16,
-                padding: 12,
-                backgroundColor: "rgba(239,68,68,0.1)",
-                border: "1px solid var(--color-error)",
-                borderRadius: "var(--radius)",
-                color: "var(--color-error)",
-                fontSize: 13,
-              }}
-            >
+            <div role="alert" style={errorBox}>
               {error}
             </div>
           )}
@@ -388,17 +377,5 @@ function EmailDraft({ document }: EmailDraftProps) {
     </div>
   );
 }
-
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  padding: "10px 12px",
-  borderRadius: "var(--radius)",
-  border: "1px solid var(--color-border)",
-  backgroundColor: "var(--color-bg)",
-  color: "var(--color-text)",
-  fontSize: 14,
-  outline: "none",
-  boxSizing: "border-box",
-};
 
 export default EmailDraft;
