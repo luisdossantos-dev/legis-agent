@@ -142,9 +142,10 @@ function SettingsModal({ isOpen, onClose, onSave }: SettingsModalProps) {
         onClose();
       }, 1200);
     } catch (err) {
+      console.error("Settings save failed:", err);
       setMessage({
         type: "error",
-        text: err instanceof Error ? err.message : t("settings.saveError"),
+        text: t("settings.saveError"),
       });
     } finally {
       setSaving(false);

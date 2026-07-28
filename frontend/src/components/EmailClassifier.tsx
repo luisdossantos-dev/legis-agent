@@ -72,7 +72,8 @@ function EmailClassifier() {
       const data: ClassificationResult = await res.json();
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("classifier.toast.error"));
+      console.error("Classification failed:", err);
+      setError(t("classifier.toast.error"));
     } finally {
       setLoading(false);
     }

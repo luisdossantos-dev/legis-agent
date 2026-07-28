@@ -40,11 +40,12 @@ function AgentChat({ document }: AgentChatProps) {
       };
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
+      console.error("Chat error:", err);
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: `Error: ${err instanceof Error ? err.message : t("chat.error")}`,
+          content: `Error: ${t("chat.error")}`,
         },
       ]);
     } finally {

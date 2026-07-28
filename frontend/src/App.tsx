@@ -122,8 +122,8 @@ function App() {
       const result = await apiClient.analyze(doc.id);
       setAnalysis(result.analysis);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Unknown error";
-      showToast("error", t("analysis.toast.error"), msg);
+      console.error("Analysis failed:", err);
+      showToast("error", t("analysis.toast.error"), t("analysis.toast.error"));
     }
   };
 

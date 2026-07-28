@@ -28,7 +28,8 @@ function DocumentUpload({ onUploadComplete }: DocumentUploadProps) {
       await apiClient.uploadDocument(file);
       onUploadComplete();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error uploading file");
+      console.error("Upload failed:", err);
+      setError("Error uploading file");
     } finally {
       setUploading(false);
     }

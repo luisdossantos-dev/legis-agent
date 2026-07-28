@@ -89,7 +89,8 @@ function ActionDetector() {
       const data: ActionResponse = await res.json();
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to detect action");
+      console.error("Action detection failed:", err);
+      setError("Failed to detect action");
     } finally {
       setLoading(false);
     }

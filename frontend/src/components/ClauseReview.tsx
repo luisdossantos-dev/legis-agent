@@ -73,8 +73,8 @@ function ClauseReview() {
       const data = await res.json();
       setResult(data);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Unknown error";
-      setError(msg);
+      console.error("Clause review failed:", err);
+      setError("Failed to review clauses");
     } finally {
       setLoading(false);
     }

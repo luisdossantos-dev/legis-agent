@@ -54,7 +54,8 @@ function UserCreateForm({ onCreated, onCancel }: UserCreateFormProps) {
       showToast("info", "User created", `User "${username}" created successfully.`);
       onCreated();
     } catch (err) {
-      showToast("error", "Creation failed", err instanceof Error ? err.message : "Unknown error");
+      console.error("User creation failed:", err);
+      showToast("error", "Creation failed", "Unknown error");
     }
   };
 

@@ -78,7 +78,8 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
       const data = await res.json();
       setResult(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Pipeline execution failed");
+      console.error("Pipeline execution failed:", err);
+      setError("Pipeline execution failed");
     } finally {
       setRunning(false);
     }

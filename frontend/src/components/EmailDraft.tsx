@@ -77,7 +77,8 @@ function EmailDraft({ document }: EmailDraftProps) {
       });
       setResult(res);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate email");
+      console.error("Email generation failed:", err);
+      setError("Failed to generate email");
     } finally {
       setLoading(false);
     }

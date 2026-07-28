@@ -105,7 +105,8 @@ function CostDashboard() {
       const json = await res.json();
       setData(json);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load dashboard data");
+      console.error("Dashboard load failed:", err);
+      setError("Failed to load dashboard data");
     } finally {
       setLoading(false);
     }

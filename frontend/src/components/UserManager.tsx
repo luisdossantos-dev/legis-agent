@@ -78,7 +78,8 @@ function UserManager() {
       fetchUsers();
       fetchAudit();
     } catch (err) {
-      showToast("error", "Delete failed", err instanceof Error ? err.message : "Unknown error");
+      console.error("User delete failed:", err);
+      showToast("error", "Delete failed", "Unknown error");
     }
   };
 
@@ -101,7 +102,8 @@ function UserManager() {
       showToast("info", "Export downloaded", `GDPR data export for "${user.username}" saved.`);
       fetchAudit();
     } catch (err) {
-      showToast("error", "Export failed", err instanceof Error ? err.message : "Unknown error");
+      console.error("Export failed:", err);
+      showToast("error", "Export failed", "Unknown error");
     } finally {
       setExportingId(null);
     }
