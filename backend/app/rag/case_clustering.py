@@ -13,7 +13,7 @@ Thresholds:
 import logging
 import statistics
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
@@ -59,8 +59,8 @@ class CaseStore:
     def create_case(self, case_data: Dict[str, Any]) -> Dict[str, Any]:
         case_id = str(uuid.uuid4())
         case_data["id"] = case_id
-        case_data["created_at"] = datetime.utcnow().isoformat()
-        case_data["updated_at"] = datetime.utcnow().isoformat()
+        case_data["created_at"] = datetime.now(timezone.utc).isoformat()
+        case_data["updated_at"] = datetime.now(timezone.utc).isoformat()
         case_data["document_count"] = 0
         case_data["documents"] = []
         case_data["status"] = "open"
@@ -73,10 +73,10 @@ class CaseStore:
             return None
 
         doc_data["category"] = category
-        doc_data["added_at"] = datetime.utcnow().isoformat()
+        doc_data["added_at"] = datetime.now(timezone.utc).isoformat()
         case["documents"].append(doc_data)
         case["document_count"] = len(case["documents"])
-        case["updated_at"] = datetime.utcnow().isoformat()
+        case["updated_at"] = datetime.now(timezone.utc).isoformat()
 
         # Update centroid
         self._recompute_centroid(case_id)
@@ -93,7 +93,7 @@ class CaseStore:
             return False
         case["documents"] = [d for d in case["documents"] if d.get("id") != document_id]
         case["document_count"] = len(case["documents"])
-        case["updated_at"] = datetime.utcnow().isoformat()
+        case["updated_at"] = datetime.now(timezone.utc).isoformat()
         self._recompute_centroid(case_id)
         self._doc_to_case.pop(document_id, None)
         return True
@@ -112,7 +112,7 @@ class CaseStore:
             self._doc_to_case[doc["id"]] = target_id
 
         target["document_count"] = len(target["documents"])
-        target["updated_at"] = datetime.utcnow().isoformat()
+        target["updated_at"] = datetime.now(timezone.utc).isoformat()
         target["parties"] = list(set(target.get("parties", []) + source.get("parties", [])))
 
         # Recompute centroid
@@ -129,7 +129,7 @@ class CaseStore:
         if not case:
             return False
         case["name"] = name
-        case["updated_at"] = datetime.utcnow().isoformat()
+        case["updated_at"] = datetime.now(timezone.utc).isoformat()
         return True
 
     def get_document_case(self, document_id: str) -> Optional[str]:

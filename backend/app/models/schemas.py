@@ -2,10 +2,15 @@
 Pydantic models for API request/response.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
+
+def _utcnow() -> datetime:
+    """Return current UTC time (timezone-aware)."""
+    return datetime.now(timezone.utc)
 
 
 # ── Documents ────────────────────────────────────────────────
@@ -16,7 +21,7 @@ class DocumentUploadResponse(BaseModel):
     pages: int
     chunks: int
     status: str = "indexed"
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utcnow)
 
 
 class DocumentSummary(BaseModel):

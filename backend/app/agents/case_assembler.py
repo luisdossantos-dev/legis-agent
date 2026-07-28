@@ -9,6 +9,7 @@ Also generates meaningful case names based on document content.
 
 import json
 import logging
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, TypedDict
 
 from langgraph.graph import END, StateGraph
@@ -170,7 +171,7 @@ async def organize_case_node(state: CaseAssemblyState) -> Dict[str, Any]:
     if case:
         case["documents"] = categorized
         case["document_count"] = len(categorized)
-        case["updated_at"] = __import__("datetime").datetime.utcnow().isoformat()
+        case["updated_at"] = datetime.now(timezone.utc).isoformat()
 
     return {"organized": True, "result": {"organized_count": len(categorized)}}
 

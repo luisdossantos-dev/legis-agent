@@ -62,17 +62,17 @@ class TestUserStore:
     def setup(self, monkeypatch):
         """Use a temp directory for user storage."""
         self.tmpdir = Path(tempfile.mkdtemp())
-        monkeypatch.setattr("app.core.auth.USERS_DIR", self.tmpdir)
-        monkeypatch.setattr("app.core.auth.USERS_FILE", self.tmpdir / "users.json")
-        monkeypatch.setattr("app.core.auth.TOKENS_FILE", self.tmpdir / "tokens.json")
+        monkeypatch.setattr("app.core.user_store.USERS_DIR", self.tmpdir)
+        monkeypatch.setattr("app.core.user_store.USERS_FILE", self.tmpdir / "users.json")
+        monkeypatch.setattr("app.core.token_store.TOKENS_FILE", self.tmpdir / "tokens.json")
 
         # Use a known admin password for deterministic testing
         from app.core.config import settings as _rbac_settings
         monkeypatch.setattr(_rbac_settings, "ADMIN_PASSWORD", "TestPass789!")
 
         # Re-trigger default admin creation
-        from app.core import auth
-        auth._ensure_default_admin()
+        from app.core import user_store
+        user_store._ensure_default_admin()
         yield
 
     def test_default_admin_created(self):

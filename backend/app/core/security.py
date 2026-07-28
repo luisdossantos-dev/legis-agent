@@ -11,7 +11,7 @@ import json
 import logging
 import re
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -198,7 +198,7 @@ class AuditLog:
         if not self._enabled:
             return
 
-        timestamp = datetime.utcnow().isoformat()
+        timestamp = datetime.now(timezone.utc).isoformat()
 
         # Log to Python logger (always)
         log_data = {
@@ -242,7 +242,7 @@ class AuditLog:
                 metadata={
                     **(metadata or {}),
                     "injection_warning": injection_warning,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
             )
             # The trace is automatically captured

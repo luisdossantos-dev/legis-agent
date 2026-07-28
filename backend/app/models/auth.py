@@ -2,11 +2,16 @@
 RBAC + GDPR Pydantic models.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
+
+def _utcnow() -> datetime:
+    """Return current UTC time (timezone-aware)."""
+    return datetime.now(timezone.utc)
 
 
 # ── Roles & Permissions ────────────────────────────────────────
@@ -89,8 +94,8 @@ class UserInDB(UserBase):
     """User as stored in DB (includes hashed password)."""
     id: str
     hashed_password: str
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=_utcnow)
+    updated_at: datetime = Field(default_factory=_utcnow)
 
 
 class UserResponse(BaseModel):
@@ -138,7 +143,7 @@ class AuditAction(str, Enum):
 class AuditLogEntry(BaseModel):
     """A single audit log entry."""
     id: str = ""
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=_utcnow)
     user_id: str
     username: str
     role: Role
@@ -158,4 +163,4 @@ class GDPRExport(BaseModel):
     documents: List[Dict[str, Any]] = []
     cases: List[Dict[str, Any]] = []
     emails: List[Dict[str, Any]] = []
-    export_generated_at: datetime = Field(default_factory=datetime.utcnow)
+    export_generated_at: datetime = Field(default_factory=_utcnow)

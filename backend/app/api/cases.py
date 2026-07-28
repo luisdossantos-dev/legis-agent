@@ -11,6 +11,7 @@ GET  /api/cases/stats — Case system statistics.
 """
 
 import logging
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException
@@ -246,7 +247,7 @@ async def categorize_document(case_id: str, req: CategorizeDocumentRequest):
     for doc in case.get("documents", []):
         if doc.get("id") == req.document_id:
             doc["category"] = req.category
-            case["updated_at"] = __import__("datetime").datetime.utcnow().isoformat()
+            case["updated_at"] = datetime.now(timezone.utc).isoformat()
             return {"status": "ok", "document_id": req.document_id, "category": req.category}
 
     raise HTTPException(status_code=404, detail=f"Document '{req.document_id}' not found in case")

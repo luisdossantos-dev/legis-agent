@@ -9,7 +9,7 @@ import asyncio
 import logging
 import re
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -72,7 +72,7 @@ async def index_document_background(
             metadata={
                 "filename": filename,
                 "extension": ext,
-                "uploaded_at": datetime.utcnow().isoformat(),
+                "uploaded_at": datetime.now(timezone.utc).isoformat(),
             },
         )
         if doc_id in _documents_store:
@@ -199,7 +199,7 @@ async def process_upload(
         "pages": max(1, pages_estimate),
         "chunks": len(chunk_texts),
         "status": "processing",
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "text": text,
         "user_id": user.user_id if user and user.user_id != "open" else None,
         "uploaded_by": user.username if user and user.user_id != "open" else None,
@@ -214,7 +214,7 @@ async def process_upload(
             pages=max(1, pages_estimate),
             chunks=len(chunk_texts),
             status="processing",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
         ),
         temp_path,
         chunk_texts,

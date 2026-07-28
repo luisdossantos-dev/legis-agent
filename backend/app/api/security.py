@@ -8,7 +8,7 @@ GET /api/security/audit-log — Get recent audit log entries.
 
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, Query
@@ -87,7 +87,7 @@ async def get_csrf_token():
     for subsequent state-changing requests.
     """
     token = str(uuid.uuid4())
-    _csrf_tokens[token] = datetime.utcnow().isoformat()
+    _csrf_tokens[token] = datetime.now(timezone.utc).isoformat()
 
     # Prune old tokens (keep at most 1000)
     if len(_csrf_tokens) > 1000:

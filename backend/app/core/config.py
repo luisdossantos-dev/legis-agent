@@ -5,7 +5,7 @@ Uses pydantic-settings for typed validation.
 
 from typing import List, Optional
 
-from pydantic import model_validator
+from pydantic import ConfigDict, model_validator
 from pydantic_settings import BaseSettings
 
 
@@ -123,9 +123,10 @@ class Settings(BaseSettings):
     # Circuit breaker open triggers an alert when true.
     ALERT_ON_CIRCUIT_OPEN: bool = True
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
 
 
 settings = Settings()

@@ -12,7 +12,7 @@ Provides:
 import json
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -112,7 +112,7 @@ def log_interaction(
     entry_id = str(uuid.uuid4())
     entry = AuditLogEntry(
         id=entry_id,
-        timestamp=datetime.utcnow(),
+        timestamp=datetime.now(timezone.utc),
         user_id=auth.user_id,
         username=auth.username,
         role=auth.role,
@@ -217,7 +217,7 @@ def export_user_data(user: UserInDB) -> GDPRExport:
         ),
         interactions=audit_entries,
         documents=documents,
-        export_generated_at=datetime.utcnow(),
+        export_generated_at=datetime.now(timezone.utc),
     )
 
 

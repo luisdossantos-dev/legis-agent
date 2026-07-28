@@ -11,7 +11,7 @@ Falls back gracefully when BM25 has no data or embeddings are mocked.
 import logging
 import re
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import numpy as np
@@ -200,7 +200,7 @@ class VectorStore:
                 "text": chunk,
                 "embedding": embedding,
                 "metadata": metadata or {},
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
             }
 
         # Rebuild BM25 index so keyword search works immediately

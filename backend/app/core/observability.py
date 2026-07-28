@@ -17,7 +17,7 @@ Metrics exposed via:
 import logging
 import time
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
@@ -177,7 +177,7 @@ class MetricsStore:
         self.operation_counts: Dict[str, int] = defaultdict(int)
         self.success_counts: Dict[str, int] = defaultdict(int)
         self.failure_counts: Dict[str, int] = defaultdict(int)
-        self.start_time = datetime.utcnow()
+        self.start_time = datetime.now(timezone.utc)
         # Time-series data for dashboard charts
         self.cost_by_day: Dict[str, float] = defaultdict(float)  # "YYYY-MM-DD" -> cost
         self.calls_by_hour: Dict[str, int] = defaultdict(int)    # "YYYY-MM-DD HH:00" -> count
@@ -204,7 +204,7 @@ class MetricsStore:
         self.tokens_by_provider[provider]["input"] += tokens_input
         self.tokens_by_provider[provider]["output"] += tokens_output
         # Time-series tracking
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         day_key = now.strftime("%Y-%m-%d")
         hour_key = now.strftime("%Y-%m-%d %H:00")
         self.cost_by_day[day_key] += cost_usd
@@ -218,7 +218,7 @@ class MetricsStore:
             self.failure_counts[operation] += 1
             if error:
                 self.errors.append({
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                     "request_id": get_current_request_id()[:12],
                     "operation": operation,
                     "provider": provider,
@@ -229,7 +229,7 @@ class MetricsStore:
     def record_routing(self, profile: str, reason: str, messages_count: int) -> None:
         """Record a routing decision."""
         self.routing_decisions.append({
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "request_id": get_current_request_id()[:12],
             "profile": profile,
             "reason": reason,
@@ -239,7 +239,7 @@ class MetricsStore:
     def record_retry(self, operation: str, attempt: int, error: str) -> None:
         """Record a retry attempt."""
         self.retries.append({
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "request_id": get_current_request_id()[:12],
             "operation": operation,
             "attempt": attempt,
@@ -248,7 +248,7 @@ class MetricsStore:
 
     def get_stats(self) -> Dict[str, Any]:
         """Get aggregate statistics."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         uptime = (now - self.start_time).total_seconds()
 
         # Latency percentiles

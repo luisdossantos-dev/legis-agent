@@ -5,7 +5,7 @@ A case file groups related notarial documents (deed + annexes +
 correspondence + identity docs) into a structured bundle.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
@@ -43,7 +43,7 @@ class CaseDocument(BaseModel):
     doc_type: str = ""  # vente, pouvoir, contrat, etc.
     chunk_count: int = 0
     text_length: int = 0
-    added_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    added_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     embedding: Optional[List[float]] = None
     summary: str = ""
 
@@ -56,8 +56,8 @@ class CaseFile(BaseModel):
     id: str
     name: str
     status: str = "open"  # open, closed, archived
-    created_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
-    updated_at: str = Field(default_factory=lambda: datetime.utcnow().isoformat())
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     document_count: int = 0
     documents: List[CaseDocument] = []
     centroid: Optional[List[float]] = None  # average embedding of all docs

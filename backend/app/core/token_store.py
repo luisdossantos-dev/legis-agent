@@ -11,7 +11,7 @@ Handles:
 import json
 import logging
 import secrets
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -58,7 +58,7 @@ def create_token(user_id: str) -> str:
     tokens = _load_tokens()
     tokens.setdefault("tokens", {})[token] = {
         "user_id": user_id,
-        "created_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
     }
     _save_tokens(tokens)
     return token

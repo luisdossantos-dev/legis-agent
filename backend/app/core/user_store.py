@@ -13,7 +13,7 @@ import json
 import logging
 import secrets
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -106,10 +106,10 @@ def _row_to_user_in_db(u: dict) -> UserInDB:
         is_active=u.get("is_active", True),
         hashed_password=u["hashed_password"],
         created_at=(
-            datetime.fromisoformat(u["created_at"]) if "created_at" in u else datetime.utcnow()
+            datetime.fromisoformat(u["created_at"]) if "created_at" in u else datetime.now(timezone.utc)
         ),
         updated_at=(
-            datetime.fromisoformat(u["updated_at"]) if "updated_at" in u else datetime.utcnow()
+            datetime.fromisoformat(u["updated_at"]) if "updated_at" in u else datetime.now(timezone.utc)
         ),
     )
 
@@ -125,7 +125,7 @@ def _row_to_user_response(u: dict) -> UserResponse:
         display_name=u.get("display_name", ""),
         is_active=u.get("is_active", True),
         created_at=(
-            datetime.fromisoformat(u["created_at"]) if "created_at" in u else datetime.utcnow()
+            datetime.fromisoformat(u["created_at"]) if "created_at" in u else datetime.now(timezone.utc)
         ),
     )
 
@@ -166,8 +166,8 @@ def _ensure_default_admin() -> None:
             "display_name": "Administrator",
             "is_active": True,
             "hashed_password": _hash_password(password),
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
         data["users"] = [admin_user]
         _save_raw(data)
@@ -250,8 +250,8 @@ def create_user(user_data: UserCreate) -> UserResponse:
         "display_name": user_data.display_name or user_data.username,
         "is_active": user_data.is_active,
         "hashed_password": _hash_password(user_data.password),
-        "created_at": datetime.utcnow().isoformat(),
-        "updated_at": datetime.utcnow().isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
     }
     data.setdefault("users", []).append(new_user)
     _save_raw(data)
@@ -276,7 +276,7 @@ def update_user(user_id: str, updates: UserUpdate) -> UserResponse:
                 u["is_active"] = updates.is_active
             if updates.password is not None:
                 u["hashed_password"] = _hash_password(updates.password)
-            u["updated_at"] = datetime.utcnow().isoformat()
+            u["updated_at"] = datetime.now(timezone.utc).isoformat()
             data["users"][i] = u
             _save_raw(data)
             logger.info("User updated: %s", u["username"])
@@ -299,8 +299,8 @@ def delete_user(user_id: str) -> None:
                 "display_name": "Deleted User",
                 "is_active": False,
                 "hashed_password": _hash_password(secrets.token_hex(16)),
-                "created_at": u.get("created_at", datetime.utcnow().isoformat()),
-                "updated_at": datetime.utcnow().isoformat(),
+                "created_at": u.get("created_at", datetime.now(timezone.utc).isoformat()),
+                "updated_at": datetime.now(timezone.utc).isoformat(),
             }
             data["users"][i] = anonymized
             _save_raw(data)

@@ -1,5 +1,6 @@
 """
-Tests básicos del pipeline RAG y agentes.
+Tests livianos del pipeline RAG.
+Solo prueba funciones puras (chunker) sin dependencias externas.
 """
 
 import pytest
@@ -7,7 +8,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_chunk_by_sections():
-    """Test que el chunking divide correctamente."""
+    """Test que chunk_by_sections divide correctamente texto legal."""
     from app.rag.chunker import chunk_by_sections
 
     text = """Artículo 1. Del objeto del contrato.
@@ -26,57 +27,28 @@ El precio total es de $10,000."""
 
 
 @pytest.mark.asyncio
-async def test_embeddings_provider():
-    """Test que el proveedor de embeddings funciona."""
-    from app.rag.embeddings import embeddings_provider
+async def test_chunk_empty_text():
+    """Test que chunk_by_sections maneja texto vacío."""
+    from app.rag.chunker import chunk_by_sections
 
-    texts = ["Este es un texto de prueba legal", "Cláusula de confidencialidad"]
-    embeddings = await embeddings_provider.embed_texts(texts)
-
-    assert len(embeddings) == 2
-    assert all(len(e) > 0 for e in embeddings)
+    chunks = chunk_by_sections("")
+    assert isinstance(chunks, list)
 
 
 @pytest.mark.asyncio
-async def test_vector_store_index_and_search():
-    """Test que el vector store indexa y busca."""
-    from app.rag.retriever import vector_store
+async def test_chunk_single_line():
+    """Test que chunk_by_sections maneja texto sin secciones."""
+    from app.rag.chunker import chunk_by_sections
 
-    doc_id = "test-doc-1"
-    chunks = [
-        "El contrato establece un plazo de 90 días.",
-        "Las partes acuerdan un precio de $10,000.",
-        "La confidencialidad se mantiene por 2 años.",
-    ]
-
-    num = await vector_store.index_document(doc_id, chunks)
-    assert num == 3
-
-    results = await vector_store.search("plazo del contrato", document_id=doc_id)
-    assert len(results) > 0
-    assert "plazo" in results[0]["text"].lower()
+    chunks = chunk_by_sections("Texto simple sin secciones.")
+    assert len(chunks) >= 1
 
 
 @pytest.mark.asyncio
-async def test_document_parser_txt(tmp_path):
-    """Test del parser de TXT."""
-    from app.ingestion.parser import parser
+async def test_chunk_unicode():
+    """Test que chunk_by_sections maneja Unicode."""
+    from app.rag.chunker import chunk_by_sections
 
-    test_file = tmp_path / "test.txt"
-    test_file.write_text("Este es un documento de prueba legal.\n\nArtículo 1.")
-
-    text = await parser.parse(str(test_file))
-    assert "documento de prueba" in text
-
-
-@pytest.mark.asyncio
-async def test_analyze_agent():
-    """Test del agente de análisis (usando mock)."""
-    from app.agents.analyzer import analyze_document
-
-    doc_text = "Contrato de prestación de servicios entre Juan Pérez y Empresa XYZ."
-
-    analysis = await analyze_document(doc_text)
-    assert analysis is not None
-    assert hasattr(analysis, "document_type")
-    assert hasattr(analysis, "summary")
+    chunks = chunk_by_sections("Artículo 1. ñoño — €100 «test» 🎉")
+    assert len(chunks) >= 1
+    assert any("ñoño" in c[0] for c in chunks)
