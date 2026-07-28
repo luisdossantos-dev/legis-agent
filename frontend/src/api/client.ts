@@ -93,19 +93,47 @@ export const apiClient = {
   },
 
   /** Upload a document */
-  async uploadDocument(file: File): Promise<{ id: string }> {
+  async uploadDocument(file: File, onProgress?: (percent: number) => void): Promise<{ id: string }> {
     const validation = validateUploadFile(file);
     if (!validation.valid) {
       throw new Error(validation.error ?? "Invalid file.");
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    return request<{ id: string; filename: string; pages: number; chunks: number; status: string; created_at: string }>(
-      `${API_PREFIX}/documents/upload`,
-      { method: "POST", body: formData }
-    );
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${API_BASE}${API_PREFIX}/documents/upload`);
+
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable && onProgress) {
+          onProgress(Math.round((e.loaded / e.total) * 100));
+        }
+      };
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          try {
+            resolve(JSON.parse(xhr.responseText));
+          } catch {
+            reject(new Error("Invalid response from server"));
+          }
+        } else {
+          try {
+            const err = JSON.parse(xhr.responseText);
+            reject(new Error(err.detail || `HTTP ${xhr.status}`));
+          } catch {
+            reject(new Error(`HTTP ${xhr.status}: Upload failed`));
+          }
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Network error during upload"));
+      xhr.onabort = () => reject(new Error("Upload aborted"));
+
+      xhr.send(formData);
+    });
   },
 
   /** List documents */

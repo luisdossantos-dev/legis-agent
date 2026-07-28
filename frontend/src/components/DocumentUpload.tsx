@@ -10,6 +10,7 @@ interface DocumentUploadProps {
 function DocumentUpload({ onUploadComplete }: DocumentUploadProps) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dragCounterRef = useRef(0);
@@ -23,15 +24,17 @@ function DocumentUpload({ onUploadComplete }: DocumentUploadProps) {
 
     setError(null);
     setUploading(true);
+    setProgress(0);
 
     try {
-      await apiClient.uploadDocument(file);
+      await apiClient.uploadDocument(file, setProgress);
       onUploadComplete();
     } catch (err) {
       console.error("Upload failed:", err);
       setError("Error uploading file");
     } finally {
       setUploading(false);
+      setProgress(0);
     }
   };
 
@@ -114,6 +117,19 @@ function DocumentUpload({ onUploadComplete }: DocumentUploadProps) {
         </div>
         <div className="upload-formats">{t("upload.formats")}</div>
       </button>
+      {uploading && (
+        <div style={{ marginTop: 10 }}>
+          <div className="progress-bar">
+            <div
+              className="progress-bar-fill"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div style={{ fontSize: 12, color: "var(--color-text-secondary)", textAlign: "center", marginTop: 4 }}>
+            {progress}%
+          </div>
+        </div>
+      )}
       {error && (
         <div style={{ color: "var(--color-error)", fontSize: 13, marginTop: 8 }} role="alert">
           {error}
