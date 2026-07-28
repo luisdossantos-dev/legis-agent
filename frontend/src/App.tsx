@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Header from "./components/Header";
 import DocumentUpload from "./components/DocumentUpload";
 import DocumentList from "./components/DocumentList";
@@ -43,6 +43,19 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [apiConfigured, setApiConfigured] = useState(false);
+
+  const handleNavigate = (view: string) => {
+    // Views that don't require a selected document
+    const globalViews = ["email", "classify", "action", "review", "users", "dashboard", "pipeline"];
+    if (globalViews.includes(view)) {
+      setSelectedDoc(null);
+    }
+    setCurrentView(view as View);
+  };
+
+  // Refs for keyboard shortcuts that need latest callback/state
+  const navigateRef = useRef(handleNavigate);
+  navigateRef.current = handleNavigate;
 
   const checkHealth = useCallback(async () => {
     try {
@@ -100,10 +113,28 @@ function App() {
         e.preventDefault();
         setPaletteOpen(true);
       }
+      // Escape → Close settings modal
+      if (e.key === "Escape" && settingsOpen) {
+        setSettingsOpen(false);
+        return;
+      }
+      // Ctrl+U or Cmd+U → Navigate to upload
+      if ((e.metaKey || e.ctrlKey) && e.key === "u") {
+        e.preventDefault();
+        navigateRef.current("upload");
+        return;
+      }
+      // Ctrl+1-7 or Cmd+1-7 → Navigate by index
+      const num = parseInt(e.key);
+      if ((e.metaKey || e.ctrlKey) && num >= 1 && num <= 7) {
+        e.preventDefault();
+        const views = ["upload", "email", "classify", "action", "review", "dashboard", "users"];
+        navigateRef.current(views[num - 1]);
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [settingsOpen]);
 
   const handleUploadComplete = () => {
     apiClient.listDocuments().then(setDocuments).catch(console.error);
@@ -184,14 +215,6 @@ function App() {
     checkHealth(); // re-check to update apiConfigured status
   };
 
-  const handleNavigate = (view: string) => {
-    // Views that don't require a selected document
-    const globalViews = ["email", "classify", "action", "review", "users", "dashboard", "pipeline"];
-    if (globalViews.includes(view)) {
-      setSelectedDoc(null);
-    }
-    setCurrentView(view as View);
-  };
 
   return (
     <div className="app">
