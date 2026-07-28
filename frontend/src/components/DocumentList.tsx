@@ -113,7 +113,8 @@ function DocumentList({ documents, onSelect, onChat, onDraftEmail, apiConfigured
                   aria-label={`${t("documents.analyze")} ${doc.filename}`}
                   style={{ opacity: btnDisabled ? 0.5 : 1 }}
                 >
-                  {t("documents.analyze")}
+                  <span className="doc-btn-icon">🔍</span>
+                  <span className="doc-btn-label">{t("documents.analyze")}</span>
                 </button>
               </span>
               <span
@@ -127,7 +128,8 @@ function DocumentList({ documents, onSelect, onChat, onDraftEmail, apiConfigured
                   aria-label={`${t("documents.chat")} ${doc.filename}`}
                   style={{ opacity: btnDisabled ? 0.5 : 1 }}
                 >
-                  {t("documents.chat")}
+                  <span className="doc-btn-icon">💬</span>
+                  <span className="doc-btn-label">{t("documents.chat")}</span>
                 </button>
               </span>
               <span
@@ -141,7 +143,8 @@ function DocumentList({ documents, onSelect, onChat, onDraftEmail, apiConfigured
                   aria-label={`${t("documents.email")} ${doc.filename}`}
                   style={{ opacity: !apiConfigured ? 0.5 : 1, fontWeight: 600 }}
                 >
-                  {t("documents.email")}
+                  <span className="doc-btn-icon">📧</span>
+                  <span className="doc-btn-label">{t("documents.email")}</span>
                 </button>
               </span>
             </div>

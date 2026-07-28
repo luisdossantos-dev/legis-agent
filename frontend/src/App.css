@@ -433,6 +433,27 @@ body {
   transform: none !important;
 }
 
+.doc-btn-icon {
+  margin-right: 4px;
+}
+
+/* Narrow sidebar: icon-only doc buttons */
+@media (max-width: 700px) {
+  .doc-btn {
+    padding: 6px 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .doc-btn-icon {
+    margin-right: 0;
+    font-size: 16px;
+  }
+  .doc-btn-label {
+    display: none;
+  }
+}
+
 /* Primary action button */
 .btn-primary {
   padding: 10px 24px;
