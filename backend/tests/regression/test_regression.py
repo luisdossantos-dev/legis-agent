@@ -19,7 +19,7 @@ class TestAuthRegression:
         """
         with open(sample_txt, "rb") as f:
             resp = await client.post(
-                "/api/documents/upload",
+                "/api/v1/documents/upload",
                 files={"file": ("regression_test.txt", f, "text/plain")},
             )
         assert resp.status_code == 200, (
@@ -36,14 +36,14 @@ class TestAuthRegression:
         """
         # Login first
         login = await client.post(
-            "/api/rbac/auth/login",
+            "/api/v1/rbac/auth/login",
             params={"username": "admin", "password": admin_password},
         )
         token = login.json()["token"]
 
         with open(sample_txt, "rb") as f:
             resp = await client.post(
-                "/api/documents/upload",
+                "/api/v1/documents/upload",
                 files={"file": ("auth_test.txt", f, "text/plain")},
                 headers={"Authorization": f"Bearer {token}"},
             )
@@ -63,7 +63,7 @@ class TestAnalysisRegression:
         # Upload
         with open(sample_txt, "rb") as f:
             upload = await client.post(
-                "/api/documents/upload",
+                "/api/v1/documents/upload",
                 files={"file": ("regression_docid.txt", f, "text/plain")},
             )
         assert upload.status_code == 200, f"Upload failed: {upload.text}"
@@ -71,7 +71,7 @@ class TestAnalysisRegression:
 
         # Analyze
         resp = await client.post(
-            "/api/agents/analyze",
+            "/api/v1/agents/analyze",
             json={"document_id": doc_id, "query": "Analyze this legal document."},
         )
         assert resp.status_code == 200, f"Analysis failed: {resp.text[:200]}"
@@ -92,7 +92,7 @@ class TestEmailTemplateRegression:
         FIX: Translated all templates to English.
         This test verifies templates have English descriptions.
         """
-        resp = await client.get("/api/email/templates")
+        resp = await client.get("/api/v1/email/templates")
         assert resp.status_code == 200
         templates = resp.json()["templates"]
         for tmpl in templates:
