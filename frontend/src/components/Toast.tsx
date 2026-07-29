@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 
 interface Toast {
   id: number;
-  type: "warning" | "error" | "info";
+  type: "success" | "warning" | "error" | "info";
   title: string;
   message: string;
   autoClose?: boolean;
@@ -48,6 +48,11 @@ function ToastContainer() {
   };
 
   const colors = {
+    success: {
+      bg: "rgba(34,197,94,0.12)",
+      border: "var(--color-success)",
+      icon: "✓",
+    },
     warning: {
       bg: "rgba(245,158,11,0.12)",
       border: "var(--color-warning)",

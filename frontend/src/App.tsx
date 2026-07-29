@@ -77,16 +77,45 @@ function App() {
     return () => clearInterval(interval);
   }, [checkHealth]);
 
-  // Poll for document status changes (processing → indexed)
+  // Track previous processing states to detect indexing completion
+  const prevProcessingRef = useRef<Set<string>>(new Set());
+
+  // Poll for document status changes (processing → indexed/error)
   useEffect(() => {
     const hasProcessing = documents.some((d) => d.status === "processing");
     if (!hasProcessing) return;
 
-    const interval = setInterval(() => {
-      apiClient.listDocuments().then(setDocuments).catch(console.error);
+    const interval = setInterval(async () => {
+      try {
+        const updated = await apiClient.listDocuments();
+        setDocuments(updated);
+
+        // Detect transitions: processing → indexed or error
+        for (const doc of updated) {
+          if (prevProcessingRef.current.has(doc.id) && doc.status !== "processing") {
+            prevProcessingRef.current.delete(doc.id);
+            if (doc.status === "indexed") {
+              showToast("success", doc.filename, "Indexation terminée ✓");
+            } else if (doc.status === "error") {
+              showToast("error", doc.filename, "Échec de l'indexation");
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Polling failed:", err);
+      }
     }, 2000);
 
     return () => clearInterval(interval);
+  }, [documents]);
+
+  // Seed the prevProcessingRef whenever the documents list changes
+  useEffect(() => {
+    for (const doc of documents) {
+      if (doc.status === "processing") {
+        prevProcessingRef.current.add(doc.id);
+      }
+    }
   }, [documents]);
 
   // Show warning toast if backend is online but no API key configured
