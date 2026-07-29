@@ -47,7 +47,7 @@ function App() {
 
   const handleNavigate = (view: string) => {
     // Views that don't require a selected document
-    const globalViews = ["email", "classify", "action", "review", "users", "dashboard", "pipeline"];
+    const globalViews = ["email", "classify", "action", "review", "users", "dashboard"];
     if (globalViews.includes(view)) {
       setSelectedDoc(null);
     }
@@ -300,6 +300,12 @@ function App() {
           )}
           {currentView === "pipeline" && selectedDoc && (
             <PipelineWorkflow document={selectedDoc} />
+          )}
+          {currentView === "pipeline" && !selectedDoc && (
+            <div className="welcome">
+              <h2>🔧 {t("pipeline.title")}</h2>
+              <p>{t("pipeline.descriptionNoDoc")}</p>
+            </div>
           )}
 
           {!selectedDoc && currentView !== "email" && currentView !== "classify" && currentView !== "action" && currentView !== "review" && currentView !== "users" && currentView !== "dashboard" && currentView !== "pipeline" && (

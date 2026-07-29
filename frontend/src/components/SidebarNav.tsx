@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { view: "classify", icon: "📬", labelKey: "header.classify" },
   { view: "action", icon: "⚡", labelKey: "header.actions" },
   { view: "review", icon: "🔍", labelKey: "header.review" },
+  { view: "pipeline", icon: "🔧", labelKey: "header.pipeline" },
   { view: "dashboard", icon: "📊", labelKey: "header.dashboard" },
   { view: "users", icon: "🔐", labelKey: "header.users" },
 ];

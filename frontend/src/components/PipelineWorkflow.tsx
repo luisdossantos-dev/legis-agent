@@ -14,6 +14,33 @@ const AVAILABLE_STEPS = [
   { id: "send", icon: "📨" },
 ];
 
+const PRESET_TEMPLATES = [
+  {
+    id: "full",
+    labelEn: "Full Analysis",
+    labelFr: "Analyse Complète",
+    steps: ["extract", "analyze", "review", "draft", "send"],
+  },
+  {
+    id: "quick",
+    labelEn: "Quick Extract",
+    labelFr: "Extraction Rapide",
+    steps: ["extract"],
+  },
+  {
+    id: "analyze-draft",
+    labelEn: "Analyze + Draft",
+    labelFr: "Analyser + Rédiger",
+    steps: ["extract", "analyze", "draft"],
+  },
+  {
+    id: "review-send",
+    labelEn: "Review + Send",
+    labelFr: "Réviser + Envoyer",
+    steps: ["review", "draft", "send"],
+  },
+];
+
 function PipelineWorkflow({ document }: PipelineWorkflowProps) {
   const [selectedSteps, setSelectedSteps] = useState<string[]>(["extract", "analyze", "draft"]);
   const [running, setRunning] = useState(false);
@@ -21,6 +48,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
   const [error, setError] = useState<string | null>(null);
   const [customQuery, setCustomQuery] = useState("");
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [currentStepIdx, setCurrentStepIdx] = useState(-1);
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -42,12 +70,44 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
     };
   }, [running]);
 
+  // Simulate step progression during execution
+  useEffect(() => {
+    if (!running) {
+      setCurrentStepIdx(-1);
+      return;
+    }
+    setCurrentStepIdx(0);
+    const stepInterval = setInterval(() => {
+      setCurrentStepIdx((prev) => {
+        if (prev >= selectedSteps.length - 1) return prev;
+        return prev + 1;
+      });
+    }, 4000);
+    return () => clearInterval(stepInterval);
+  }, [running, selectedSteps.length]);
+
   const toggleStep = (stepId: string) => {
     setSelectedSteps((prev) =>
       prev.includes(stepId)
         ? prev.filter((s) => s !== stepId)
         : [...prev, stepId]
     );
+  };
+
+  const moveStep = (stepId: string, direction: -1 | 1) => {
+    setSelectedSteps((prev) => {
+      const idx = prev.indexOf(stepId);
+      if (idx === -1) return prev;
+      const newIdx = idx + direction;
+      if (newIdx < 0 || newIdx >= prev.length) return prev;
+      const next = [...prev];
+      [next[idx], next[newIdx]] = [next[newIdx], next[idx]];
+      return next;
+    });
+  };
+
+  const applyPreset = (steps: string[]) => {
+    setSelectedSteps(steps);
   };
 
   const handleRun = async () => {
@@ -77,7 +137,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.detail || "Pipeline failed");
+        throw new Error(errData.detail || t("pipeline.toast.error"));
       }
 
       const data = await res.json();
@@ -90,6 +150,24 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
     }
   };
 
+  // ── Style constants ─────────────────────────────────
+
+  const cardStyle: React.CSSProperties = {
+    backgroundColor: "var(--color-surface)",
+    border: "1px solid var(--color-border)",
+    borderRadius: "var(--radius-lg)",
+    padding: 20,
+    marginBottom: 20,
+  };
+
+  const labelStyle: React.CSSProperties = {
+    display: "block",
+    fontSize: 13,
+    fontWeight: 600,
+    marginBottom: 10,
+    color: "var(--color-text)",
+  };
+
   return (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
       <h2 style={{ fontSize: 22, marginBottom: 8 }}>{t("pipeline.title")}</h2>
@@ -98,90 +176,198 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
       </p>
 
       {/* Document info */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          padding: "10px 14px",
-          marginBottom: 20,
-          backgroundColor: "rgba(99,102,241,0.08)",
-          border: "1px solid var(--color-primary)",
-          borderRadius: "var(--radius)",
-          fontSize: 13,
-        }}
-      >
-        📄 <strong>{document.filename}</strong>
-        <span style={{ color: "var(--color-text-secondary)" }}>
-          {/* Use pagesChunks translation from i18n */}
-          {t("documents.pagesChunks", String(document.pages), String(document.chunks))}
-        </span>
+      <div style={cardStyle}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+          📄 <strong>{document.filename}</strong>
+          <span style={{ color: "var(--color-text-secondary)" }}>
+            {t("documents.pagesChunks", String(document.pages), String(document.chunks))}
+          </span>
+        </div>
       </div>
 
-      {/* Step selector */}
+      {/* Preset templates */}
       <div style={{ marginBottom: 20 }}>
-        <label
-          style={{
-            display: "block",
-            fontSize: 13,
-            fontWeight: 600,
-            marginBottom: 10,
-            color: "var(--color-text)",
-          }}
-        >
-          {t("pipeline.steps")}
-        </label>
+        <label style={labelStyle}>⚡ {t("pipeline.presets")}</label>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {AVAILABLE_STEPS.map((step) => {
-            const isSelected = selectedSteps.includes(step.id);
+          {PRESET_TEMPLATES.map((tmpl) => {
+            const isActive = tmpl.steps.join(",") === selectedSteps.join(",");
             return (
               <button
-                key={step.id}
-                onClick={() => toggleStep(step.id)}
+                key={tmpl.id}
+                onClick={() => applyPreset(tmpl.steps)}
                 disabled={running}
                 style={{
-                  padding: "10px 18px",
+                  padding: "6px 14px",
                   borderRadius: "var(--radius)",
-                  border: `2px solid ${
-                    isSelected ? "var(--color-primary)" : "var(--color-border)"
-                  }`,
-                  backgroundColor: isSelected
-                    ? "var(--color-primary-bg)"
-                    : "var(--color-surface)",
-                  color: isSelected
-                    ? "var(--color-primary)"
-                    : "var(--color-text-secondary)",
+                  border: `1px solid ${isActive ? "var(--color-primary)" : "var(--color-border)"}`,
+                  backgroundColor: isActive ? "var(--color-primary-bg)" : "var(--color-bg)",
+                  color: isActive ? "var(--color-primary)" : "var(--color-text-secondary)",
                   cursor: running ? "not-allowed" : "pointer",
-                  fontSize: 13,
-                  fontWeight: isSelected ? 700 : 500,
+                  fontSize: 12,
+                  fontWeight: isActive ? 700 : 500,
                   transition: "all 0.15s ease",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 2,
-                  minWidth: 90,
                 }}
-                title={t(`pipeline.steps.${step.id}.desc`)}
               >
-                <span style={{ fontSize: 20 }}>{step.icon}</span>
-                <span>{t(`pipeline.steps.${step.id}`)}</span>
+                {tmpl.labelEn}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Custom query */}
+      {/* Step selector with visual flow */}
       <div style={{ marginBottom: 20 }}>
-        <label
+        <label style={labelStyle}>{t("pipeline.steps")}</label>
+        <div
           style={{
-            display: "block",
-            fontSize: 13,
-            fontWeight: 600,
-            marginBottom: 6,
-            color: "var(--color-text)",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            flexWrap: "wrap",
+            padding: 16,
+            backgroundColor: "var(--color-bg)",
+            borderRadius: "var(--radius-lg)",
+            border: "1px solid var(--color-border)",
           }}
         >
+          {AVAILABLE_STEPS.map((step, idx) => {
+            const isSelected = selectedSteps.includes(step.id);
+            const orderIdx = selectedSteps.indexOf(step.id);
+            const isInFlow = isSelected;
+            const isCurrentlyExecuting = running && isInFlow && selectedSteps.indexOf(step.id) === currentStepIdx;
+            const hasBeenExecuted = running && isInFlow && selectedSteps.indexOf(step.id) < currentStepIdx;
+
+            return (
+              <div key={step.id} style={{ display: "flex", alignItems: "center", gap: 2 }}>
+                {/* Arrow connector between steps */}
+                {idx > 0 && <span style={{ color: "var(--color-text-secondary)", fontSize: 12, margin: "0 2px" }}>→</span>}
+
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                  <button
+                    onClick={() => toggleStep(step.id)}
+                    disabled={running}
+                    style={{
+                      padding: "8px 14px",
+                      borderRadius: "var(--radius)",
+                      border: `2px solid ${
+                        isCurrentlyExecuting
+                          ? "var(--color-success)"
+                          : isSelected
+                          ? "var(--color-primary)"
+                          : "var(--color-border)"
+                      }`,
+                      backgroundColor: isCurrentlyExecuting
+                        ? "rgba(34,197,94,0.15)"
+                        : isSelected
+                        ? "var(--color-primary-bg)"
+                        : "var(--color-surface)",
+                      color: isCurrentlyExecuting
+                        ? "var(--color-success)"
+                        : isSelected
+                        ? "var(--color-primary)"
+                        : "var(--color-text-secondary)",
+                      cursor: running ? "not-allowed" : "pointer",
+                      fontSize: 13,
+                      fontWeight: isSelected ? 700 : 500,
+                      transition: "all 0.15s ease",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 1,
+                      minWidth: 70,
+                      opacity: hasBeenExecuted ? 0.6 : 1,
+                      position: "relative",
+                    }}
+                    title={t(`pipeline.steps.${step.id}.desc`)}
+                  >
+                    <span style={{ fontSize: 18 }}>{isCurrentlyExecuting ? "⏳" : step.icon}</span>
+                    <span style={{ fontSize: 11 }}>{t(`pipeline.steps.${step.id}`)}</span>
+                    {isCurrentlyExecuting && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          top: -4,
+                          right: -4,
+                          width: 8,
+                          height: 8,
+                          borderRadius: "50%",
+                          backgroundColor: "var(--color-success)",
+                          animation: "pulse 1s infinite",
+                        }}
+                      />
+                    )}
+                  </button>
+
+                  {/* Reorder buttons */}
+                  {isSelected && !running && (
+                    <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); moveStep(step.id, -1); }}
+                        disabled={orderIdx === 0}
+                        title="Move left"
+                        style={{
+                          border: "none",
+                          background: "none",
+                          cursor: orderIdx === 0 ? "default" : "pointer",
+                          fontSize: 10,
+                          color: orderIdx === 0 ? "var(--color-border)" : "var(--color-text-secondary)",
+                          padding: "1px 4px",
+                          borderRadius: 4,
+                        }}
+                      >
+                        ◀
+                      </button>
+                      <span style={{ fontSize: 10, color: "var(--color-text-secondary)" }}>{orderIdx + 1}</span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); moveStep(step.id, 1); }}
+                        disabled={orderIdx === selectedSteps.length - 1}
+                        title="Move right"
+                        style={{
+                          border: "none",
+                          background: "none",
+                          cursor: orderIdx === selectedSteps.length - 1 ? "default" : "pointer",
+                          fontSize: 10,
+                          color: orderIdx === selectedSteps.length - 1 ? "var(--color-border)" : "var(--color-text-secondary)",
+                          padding: "1px 4px",
+                          borderRadius: 4,
+                        }}
+                      >
+                        ▶
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Flow visualization: show order of selected steps */}
+        {selectedSteps.length > 1 && !running && (
+          <div
+            style={{
+              marginTop: 10,
+              fontSize: 12,
+              color: "var(--color-text-secondary)",
+              textAlign: "center",
+              padding: "6px 12px",
+              backgroundColor: "rgba(99,102,241,0.06)",
+              borderRadius: "var(--radius)",
+            }}
+          >
+            {selectedSteps.map((id, i) => (
+              <span key={id}>
+                {i > 0 && <span style={{ margin: "0 6px" }}>→</span>}
+                {t(`pipeline.steps.${id}`)}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Custom query */}
+      <div style={{ marginBottom: 20 }}>
+        <label style={labelStyle}>
           {t("pipeline.query")} <span style={{ fontWeight: 400, color: "var(--color-text-secondary)" }}>{t("pipeline.queryOptional")}</span>
         </label>
         <textarea
@@ -219,8 +405,9 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
         )}
       </button>
 
+      {/* Running state */}
       {running && (
-        <div style={{ marginBottom: 20 }}>
+        <div style={cardStyle}>
           <div className="progress-bar" style={{ marginBottom: 8 }}>
             <div className="progress-bar-indeterminate" />
           </div>
@@ -228,24 +415,48 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
             ⏳ {t("pipeline.running")}... {t("pipeline.elapsed", String(elapsedSeconds))}
           </div>
 
-          {selectedSteps.includes("analyze") && (
-            <div style={{ marginTop: 12 }}>
-              <div className="section-label">{t("analysis.summary")}</div>
-              <div className="skeleton" style={{ height: 60, marginTop: 6 }} />
-            </div>
-          )}
-          {selectedSteps.includes("review") && (
-            <div style={{ marginTop: 12 }}>
-              <div className="section-label">{t("pipeline.steps.review")}</div>
-              <div className="skeleton" style={{ height: 80, marginTop: 6 }} />
-            </div>
-          )}
-          {selectedSteps.includes("draft") && (
-            <div style={{ marginTop: 12 }}>
-              <div className="section-label">{t("pipeline.steps.draft")}</div>
-              <div className="skeleton" style={{ height: 80, marginTop: 6 }} />
-            </div>
-          )}
+          {/* Current step indicator */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: 8,
+              flexWrap: "wrap",
+              marginTop: 8,
+            }}
+          >
+            {selectedSteps.map((id, i) => {
+              const step = AVAILABLE_STEPS.find((s) => s.id === id);
+              const isDone = i < currentStepIdx;
+              const isCurrent = i === currentStepIdx;
+              return (
+                <div
+                  key={id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    padding: "4px 10px",
+                    borderRadius: "var(--radius)",
+                    backgroundColor: isCurrent
+                      ? "rgba(34,197,94,0.12)"
+                      : isDone
+                      ? "rgba(99,102,241,0.08)"
+                      : "var(--color-surface)",
+                    border: `1px solid ${
+                      isCurrent ? "var(--color-success)" : isDone ? "var(--color-primary)" : "var(--color-border)"
+                    }`,
+                    fontSize: 12,
+                    color: isCurrent || isDone ? "var(--color-text)" : "var(--color-text-secondary)",
+                    opacity: isDone ? 0.7 : 1,
+                  }}
+                >
+                  {isDone ? "✅" : isCurrent ? "⏳" : step?.icon || "○"}
+                  <span>{t(`pipeline.steps.${id}`)}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -269,14 +480,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
 
       {/* Result */}
       {result && (
-        <div
-          style={{
-            backgroundColor: "var(--color-surface)",
-            border: "1px solid var(--color-border)",
-            borderRadius: "var(--radius-lg)",
-            padding: 20,
-          }}
-        >
+        <div style={cardStyle}>
           <h3 style={{ fontSize: 16, marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
             {t("pipeline.result")}
             <span style={{ fontSize: 12, color: "var(--color-text-secondary)", fontWeight: 400 }}>

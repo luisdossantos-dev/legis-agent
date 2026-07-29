@@ -44,6 +44,7 @@ const translations: Record<string, any> = {
   "header.review": { en: "Review", fr: "Réviser" },
   "header.dashboard": { en: "Dashboard", fr: "Tableau de bord" },
   "header.users": { en: "Users", fr: "Utilisateurs" },
+  "header.pipeline": { en: "Pipeline", fr: "Pipeline" },
   "header.settings": { en: "⚙️ Settings", fr: "⚙️ Paramètres" },
   "header.refresh": { en: "↻ Refresh documents", fr: "↻ Actualiser les documents" },
   "header.theme": { en: "Toggle theme", fr: "Changer le thème" },
@@ -214,6 +215,8 @@ const translations: Record<string, any> = {
   // ══════════════════════════════════════════════════════════════
   "pipeline.title": { en: "🔧 Agent Pipeline", fr: "🔧 Pipeline d'Agent" },
   "pipeline.description": { en: "Configure and run a multi-step agent pipeline on this document.", fr: "Configurez et exécutez un pipeline multi-étapes sur ce document." },
+  "pipeline.descriptionNoDoc": { en: "Select a document first, then open Pipeline to configure and run a multi-step workflow.", fr: "Sélectionnez d'abord un document, puis ouvrez Pipeline pour configurer et exécuter un workflow multi-étapes." },
+  "pipeline.presets": { en: "Quick Presets", fr: "Préréglages Rapides" },
   "pipeline.steps": { en: "Pipeline Steps", fr: "Étapes du Pipeline" },
   "pipeline.run": { en: "▶️ Run Pipeline", fr: "▶️ Exécuter le Pipeline" },
   "pipeline.running": { en: "Running pipeline...", fr: "Exécution du pipeline..." },
