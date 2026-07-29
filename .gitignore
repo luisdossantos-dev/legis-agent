@@ -49,3 +49,4 @@ coverage/
 coverage.xml
 htmlcov/
 .coverage
+uploads/
