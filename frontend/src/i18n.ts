@@ -209,6 +209,8 @@ const translations: Record<string, any> = {
   "dashboard.table.success": { en: "✅ Success Rates", fr: "✅ Taux de Réussite" },
   "dashboard.noCostData": { en: "No cost data recorded yet.", fr: "Aucune donnée de coût enregistrée." },
   "dashboard.noCallData": { en: "No call data recorded yet.", fr: "Aucune donnée d'appel enregistrée." },
+  "dashboard.pricePerMillion": { en: "Price/M tokens", fr: "Prix/M tokens" },
+  "dashboard.loadError": { en: "Failed to load dashboard data", fr: "Échec du chargement des données" },
 
   // ══════════════════════════════════════════════════════════════
   // PIPELINE / WORKFLOW

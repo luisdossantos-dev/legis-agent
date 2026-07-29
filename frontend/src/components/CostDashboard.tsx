@@ -92,10 +92,18 @@ const PROVIDER_COLORS = ["#10a37f", "#d97706", "#4285f4", "#4f46e5", "#7c3aed", 
 
 // ── Component ───────────────────────────────────────────────────
 
+const DEFAULT_PRICE_PER_MILLION = 10; // USD
+
 function CostDashboard() {
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pricePerMillion, setPricePerMillion] = useState<number>(() => {
+    const saved = localStorage.getItem("legis-price-per-million");
+    return saved ? parseFloat(saved) : DEFAULT_PRICE_PER_MILLION;
+  });
+
+  const calcCost = (tokens: number) => (tokens / 1_000_000) * pricePerMillion;
 
   const fetchData = useCallback(async () => {
     try {
@@ -107,7 +115,7 @@ function CostDashboard() {
       setData(json);
     } catch (err) {
       console.error("Dashboard load failed:", err);
-      setError("Failed to load dashboard data");
+      setError(t("dashboard.loadError"));
     } finally {
       setLoading(false);
     }
@@ -281,9 +289,38 @@ function CostDashboard() {
             Uptime: {fmtDuration(data.uptime_seconds)} · Auto-refresh every 30s
           </div>
         </div>
-        <button onClick={fetchData} className="doc-btn" style={{ padding: "8px 18px" }}>
-          ↻ Refresh
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <label style={{ fontSize: 12, color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>
+            {t("dashboard.pricePerMillion")}
+          </label>
+          <span style={{ fontSize: 12, color: "var(--color-text-secondary)" }}>$</span>
+          <input
+            type="number"
+            min={0}
+            step={0.5}
+            value={pricePerMillion}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value) || 0;
+              setPricePerMillion(val);
+              localStorage.setItem("legis-price-per-million", String(val));
+            }}
+            style={{
+              width: 70,
+              padding: "6px 8px",
+              borderRadius: "var(--radius)",
+              border: "1px solid var(--color-border)",
+              backgroundColor: "var(--color-bg)",
+              color: "var(--color-text)",
+              fontSize: 13,
+              textAlign: "right",
+              outline: "none",
+            }}
+          />
+          <span style={{ fontSize: 11, color: "var(--color-text-secondary)" }}>/M tokens</span>
+          <button onClick={fetchData} className="doc-btn" style={{ padding: "8px 18px" }}>
+            ↻ {t("app.refresh")}
+          </button>
+        </div>
       </div>
 
       {/* ── Summary Cards ───────────────────────── */}
@@ -296,12 +333,12 @@ function CostDashboard() {
         }}
       >
         {[
-          { label: t("dashboard.card.totalCost"), value: fmtMoney(data.total_cost_usd), color: "var(--color-warning)" },
-          { label: t("dashboard.card.monthlyEst"), value: fmtMoney(data.monthly_estimate_usd) + "/mo", color: "var(--color-primary)" },
+          { label: t("dashboard.card.totalCost"), value: fmtMoney(calcCost(data.total_tokens)), color: "var(--color-warning)" },
+          { label: t("dashboard.card.monthlyEst"), value: fmtMoney(calcCost(data.total_tokens) * 30) + "/mo", color: "var(--color-primary)" },
           { label: t("dashboard.card.operations"), value: fmtNumber(data.total_operations), color: "var(--color-success)" },
           { label: t("dashboard.card.tokens"), value: fmtNumber(data.total_tokens), color: "var(--color-accent)" },
-          { label: t("dashboard.card.errors"), value: fmtNumber(data.recent_errors.length), color: data.recent_errors.length > 0 ? "var(--color-error)" : "var(--color-success)" },
-          { label: t("dashboard.card.models"), value: fmtNumber(Object.keys(data.cost_by_model).length), color: "var(--color-primary)" },
+          { label: "Input Tokens", value: fmtNumber(Object.values(data.tokens_by_provider).reduce((s, t) => s + t.input, 0)), color: "var(--color-accent)" },
+          { label: "Output Tokens", value: fmtNumber(Object.values(data.tokens_by_provider).reduce((s, t) => s + t.output, 0)), color: "var(--color-primary)" },
         ].map((card) => (
           <div
             key={card.label}
