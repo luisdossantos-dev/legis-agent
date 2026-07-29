@@ -230,6 +230,17 @@ const translations: Record<string, any> = {
   "pipeline.steps.send.desc": { en: "Final formatting and assembly", fr: "Mise en forme et assemblage final" },
   "pipeline.stepsExecuted": { en: "Steps executed", fr: "Étapes exécutées" },
   "pipeline.processingTime": { en: "Processing time", fr: "Temps de traitement" },
+  "pipeline.query": { en: "Query", fr: "Requête" },
+  "pipeline.queryOptional": { en: "(optional)", fr: "(facultatif)" },
+  "pipeline.queryPlaceholder": { en: "Analyze this legal document and extract its main components.", fr: "Analysez ce document juridique et extrayez ses composants principaux." },
+  "pipeline.type": { en: "Type:", fr: "Type :" },
+  "pipeline.unknown": { en: "Unknown", fr: "Inconnu" },
+  "pipeline.stepsCount": (n: string) => ({ en: `${n} steps`, fr: `${n} étapes` }),
+  "pipeline.confirm": (n: string, f: string) => ({
+    en: `Run ${n} pipeline step${n === "1" ? "" : "s"} on "${f}"?\n\nThis may take 30–90 seconds.`,
+    fr: `Exécuter ${n} étape${n === "1" ? "" : "s"} du pipeline sur "${f}" ?\n\nCela peut prendre 30 à 90 secondes.`,
+  }),
+  "pipeline.elapsed": (s: string) => ({ en: `${s}s`, fr: `${s}s` }),
   "pipeline.toast.error": { en: "Pipeline execution failed", fr: "Échec de l'exécution du pipeline" },
 
   // ══════════════════════════════════════════════════════════════

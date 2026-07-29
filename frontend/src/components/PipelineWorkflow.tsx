@@ -54,7 +54,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
     if (selectedSteps.length === 0) return;
 
     const stepCount = selectedSteps.length;
-    if (!window.confirm(`Run ${stepCount} pipeline step${stepCount > 1 ? "s" : ""} on "${document.filename}"?\n\nThis may take 30–90 seconds.`)) {
+    if (!window.confirm(t("pipeline.confirm", String(stepCount), document.filename))) {
       return;
     }
 
@@ -84,7 +84,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
       setResult(data);
     } catch (err) {
       console.error("Pipeline execution failed:", err);
-      setError("Pipeline execution failed");
+      setError(t("pipeline.toast.error"));
     } finally {
       setRunning(false);
     }
@@ -113,7 +113,8 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
       >
         📄 <strong>{document.filename}</strong>
         <span style={{ color: "var(--color-text-secondary)" }}>
-          ({document.pages} pages, {document.chunks} chunks)
+          {/* Use pagesChunks translation from i18n */}
+          {t("documents.pagesChunks", String(document.pages), String(document.chunks))}
         </span>
       </div>
 
@@ -181,13 +182,13 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
             color: "var(--color-text)",
           }}
         >
-          Query <span style={{ fontWeight: 400, color: "var(--color-text-secondary)" }}>(optional)</span>
+          {t("pipeline.query")} <span style={{ fontWeight: 400, color: "var(--color-text-secondary)" }}>{t("pipeline.queryOptional")}</span>
         </label>
         <textarea
           value={customQuery}
           onChange={(e) => setCustomQuery(e.target.value)}
           disabled={running}
-          placeholder="Analyze this legal document and extract its main components."
+          placeholder={t("pipeline.queryPlaceholder")}
           rows={2}
           style={{
             width: "100%",
@@ -214,7 +215,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
         {running ? (
           <span>⏳ {t("pipeline.running")}</span>
         ) : (
-          <span>{t("pipeline.run")} ({selectedSteps.length} steps)</span>
+          <span>{t("pipeline.run")} ({t("pipeline.stepsCount", String(selectedSteps.length))})</span>
         )}
       </button>
 
@@ -224,7 +225,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
             <div className="progress-bar-indeterminate" />
           </div>
           <div style={{ fontSize: 13, color: "var(--color-text-secondary)", textAlign: "center", marginBottom: 12 }}>
-            ⏳ {t("pipeline.running")}... {elapsedSeconds}s
+            ⏳ {t("pipeline.running")}... {t("pipeline.elapsed", String(elapsedSeconds))}
           </div>
 
           {selectedSteps.includes("analyze") && (
@@ -348,7 +349,7 @@ function PipelineWorkflow({ document }: PipelineWorkflowProps) {
             }}
           >
             <span>⏱️ {t("pipeline.processingTime")}: {(result.processing_time_ms / 1000).toFixed(1)}s</span>
-            <span>📄 Type: {result.document_type || "Unknown"}</span>
+            <span>📄 {t("pipeline.type")} {result.document_type || t("pipeline.unknown")}</span>
           </div>
         </div>
       )}
