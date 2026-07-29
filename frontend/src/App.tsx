@@ -16,7 +16,7 @@ import SidebarNav from "./components/SidebarNav";
 import CommandPalette from "./components/CommandPalette";
 import ToastContainer, { showToast } from "./components/Toast";
 import { apiClient } from "./api/client";
-import { t } from "./i18n";
+import { useLanguage } from "./i18n";
 import type { DocumentSummary, AnalysisResult as AnalysisResultType } from "./api/client";
 
 type View = "upload" | "analyze" | "chat" | "email" | "classify" | "action" | "review" | "users" | "dashboard" | "pipeline";
@@ -43,6 +43,7 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [apiConfigured, setApiConfigured] = useState(false);
+  const { t } = useLanguage();
 
   const handleNavigate = (view: string) => {
     // Views that don't require a selected document
