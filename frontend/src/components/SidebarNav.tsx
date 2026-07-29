@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { view: "pipeline", icon: "🔧", labelKey: "header.pipeline" },
   { view: "dashboard", icon: "📊", labelKey: "header.dashboard" },
   { view: "users", icon: "🔐", labelKey: "header.users" },
+  { view: "docs", icon: "📖", labelKey: "header.docs" },
 ];
 
 function SidebarNav({ currentView, onNavigate }: SidebarNavProps) {

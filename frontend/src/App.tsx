@@ -11,6 +11,7 @@ import ClauseReview from "./components/ClauseReview";
 import UserManager from "./components/UserManager";
 import CostDashboard from "./components/CostDashboard";
 import PipelineWorkflow from "./components/PipelineWorkflow";
+import Documentation from "./components/Documentation";
 import SettingsModal from "./components/SettingsModal";
 import SidebarNav from "./components/SidebarNav";
 import CommandPalette from "./components/CommandPalette";
@@ -19,7 +20,7 @@ import { apiClient } from "./api/client";
 import { useLanguage } from "./i18n";
 import type { DocumentSummary, AnalysisResult as AnalysisResultType } from "./api/client";
 
-type View = "upload" | "analyze" | "chat" | "email" | "classify" | "action" | "review" | "users" | "dashboard" | "pipeline";
+type View = "upload" | "analyze" | "chat" | "email" | "classify" | "action" | "review" | "users" | "dashboard" | "pipeline" | "docs";
 
 const API_BASE = "http://localhost:8000";
 const API_PREFIX = "/api/v1";
@@ -47,7 +48,7 @@ function App() {
 
   const handleNavigate = (view: string) => {
     // Views that don't require a selected document
-    const globalViews = ["email", "classify", "action", "review", "users", "dashboard"];
+    const globalViews = ["email", "classify", "action", "review", "users", "dashboard", "docs"];
     if (globalViews.includes(view)) {
       setSelectedDoc(null);
     }
@@ -307,8 +308,9 @@ function App() {
               <p>{t("pipeline.descriptionNoDoc")}</p>
             </div>
           )}
+          {currentView === "docs" && <Documentation />}
 
-          {!selectedDoc && currentView !== "email" && currentView !== "classify" && currentView !== "action" && currentView !== "review" && currentView !== "users" && currentView !== "dashboard" && currentView !== "pipeline" && (
+          {!selectedDoc && currentView !== "email" && currentView !== "classify" && currentView !== "action" && currentView !== "review" && currentView !== "users" && currentView !== "dashboard" && currentView !== "pipeline" && currentView !== "docs" && (
             <div className="welcome">
               <h2>{t("welcome.title")}</h2>
               <p>{t("welcome.description")}</p>
