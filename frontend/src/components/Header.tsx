@@ -12,7 +12,7 @@ function Header({ backendStatus, onOpenSettings, apiConfigured }: HeaderProps) {
 
   // ── Theme management ──────────────────────────
   const [theme, setTheme] = useState<string>(() => {
-    return localStorage.getItem("legis-theme") || "dark";
+    return localStorage.getItem("legis-theme") || "light";
   });
 
   const toggleTheme = () => {
